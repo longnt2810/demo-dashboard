@@ -50,7 +50,7 @@ This project is configured to automatically deploy to GitHub Pages using GitHub 
 4. **Monitor deployment**:
    - Go to the **Actions** tab in your GitHub repository
    - Watch the deployment workflow run
-   - Once complete, your site will be available at: `https://your-username.github.io/vietnam-finance-dashboard/`
+   - Once complete, your site will be available at: `https://your-username.github.io/demo-dashboard/`
 
 ### Manual Deployment
 

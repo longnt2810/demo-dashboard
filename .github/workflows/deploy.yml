@@ -25,7 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # Set base path for GitHub Pages (repository name)
-      VITE_BASE_PATH: /vietnam-finance-dashboard/
+      VITE_BASE_PATH: /demo-dashboard/
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
