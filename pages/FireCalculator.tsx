@@ -1,0 +1,386 @@
+import React, { useState, useEffect, useContext } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowLeft, RefreshCcw, Flame, PiggyBank, CalendarCheck, TrendingUp, AlertTriangle, Calculator } from 'lucide-react';
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ReferenceLine } from 'recharts';
+import { useTranslation } from 'react-i18next';
+import { ThemeContext } from '../App';
+
+interface FireRow {
+  age: number;
+  year: number;
+  netWorth: number;
+  fireTarget: number;
+}
+
+type Frequency = 'Monthly' | 'Yearly';
+
+const FireCalculator: React.FC = () => {
+  const { t } = useTranslation();
+  const { isDark } = useContext(ThemeContext);
+
+  // Inputs
+  const [currentAge, setCurrentAge] = useState<number>(30);
+  const [netWorth, setNetWorth] = useState<number>(500000000); // 500M VND
+  
+  // Income
+  const [income, setIncome] = useState<number>(360000000); // Default value
+  const [incomeFreq, setIncomeFreq] = useState<Frequency>('Yearly');
+
+  // Expenses
+  const [expense, setExpense] = useState<number>(180000000); // Default value
+  const [expenseFreq, setExpenseFreq] = useState<Frequency>('Yearly');
+
+  const [returnRate, setReturnRate] = useState<number>(10); // 10% investment return
+  const [inflationRate, setInflationRate] = useState<number>(4); // 4% inflation
+  const [withdrawalRate, setWithdrawalRate] = useState<number>(4); // 4% rule
+
+  // Results
+  const [fireNumber, setFireNumber] = useState<number>(0);
+  const [yearsToFire, setYearsToFire] = useState<number>(0);
+  const [ageAtFire, setAgeAtFire] = useState<number>(0);
+  const [savingsRate, setSavingsRate] = useState<number>(0);
+  const [data, setData] = useState<FireRow[]>([]);
+
+  useEffect(() => {
+    calculateFire();
+  }, [currentAge, netWorth, income, incomeFreq, expense, expenseFreq, returnRate, inflationRate, withdrawalRate]);
+
+  const calculateFire = () => {
+    // Normalize to Annual values for calculation
+    const annualIncome = incomeFreq === 'Monthly' ? income * 12 : income;
+    const annualExpenses = expenseFreq === 'Monthly' ? expense * 12 : expense;
+
+    // 1. Calculate Target
+    const target = annualExpenses / (withdrawalRate / 100);
+    setFireNumber(target);
+
+    // 2. Calculate Savings Rate
+    const savings = annualIncome - annualExpenses;
+    const rate = annualIncome > 0 ? (savings / annualIncome) * 100 : 0;
+    setSavingsRate(rate);
+
+    // 3. Project Growth (Using Real Rate of Return for simplicity in visualization relative to purchasing power)
+    // Formula: Real Rate = (1 + Nominal) / (1 + Inflation) - 1
+    const realReturnRate = ((1 + returnRate / 100) / (1 + inflationRate / 100)) - 1;
+    
+    // We project using REAL values so the FIRE Target line stays flat (representing today's purchasing power).
+    // This makes the chart easier to understand.
+    
+    let currentBalance = netWorth;
+    const rows: FireRow[] = [];
+    const currentYear = new Date().getFullYear();
+    let reached = false;
+    let yearsAfterFire = 0;
+
+    // Limit projection to 50 years or Age 100
+    const maxYears = 100 - currentAge;
+
+    for (let i = 0; i <= maxYears; i++) {
+      rows.push({
+        age: currentAge + i,
+        year: currentYear + i,
+        netWorth: Math.round(currentBalance),
+        fireTarget: Math.round(target)
+      });
+
+      if (currentBalance >= target) {
+        if (!reached) {
+            setYearsToFire(i);
+            setAgeAtFire(currentAge + i);
+            reached = true;
+        }
+        
+        yearsAfterFire++;
+        // Stop 5 years after reaching target to show the crossover clearly but not go on forever
+        if (yearsAfterFire >= 5) {
+            break;
+        }
+      }
+
+      // Grow for next year
+      // Add savings (assuming savings adjust with inflation, so in real terms they are constant)
+      currentBalance = currentBalance * (1 + realReturnRate) + savings;
+    }
+
+    if (!reached) {
+      setYearsToFire(maxYears);
+      setAgeAtFire(currentAge + maxYears);
+    }
+
+    setData(rows);
+  };
+
+  // Formatters
+  const formatShortVND = (num: number) => {
+    if (num >= 1000000000) return `${(num / 1000000000).toFixed(2)} tỷ`;
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)} tr`;
+    return num.toLocaleString();
+  };
+
+  const formatInputValue = (val: number) => {
+    return val.toLocaleString('vi-VN');
+  };
+
+  const handleCurrencyChange = (setter: (val: number) => void) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    const rawValue = e.target.value.replace(/\./g, '').replace(/[^0-9]/g, '');
+    setter(Number(rawValue));
+  };
+
+  const chartGridColor = isDark ? '#334155' : '#e2e8f0';
+  const chartTextColor = isDark ? '#94a3b8' : '#94a3b8';
+  const chartTooltipBg = isDark ? '#1e293b' : '#fff';
+  const chartTooltipBorder = isDark ? '#334155' : '#e2e8f0';
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <Link to="/tools" className="inline-flex items-center text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 mb-6 transition-colors">
+        <ArrowLeft className="h-4 w-4 mr-1" /> {t('common.tools')}
+      </Link>
+
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          {t('tools.fire.name')} <Flame className="h-8 w-8 text-orange-500" />
+        </h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-2">{t('tools.fire.desc')}</p>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
+        {/* Left Column: Inputs */}
+        <div className="lg:col-span-4 space-y-6">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+              <Calculator className="h-5 w-5 text-emerald-600" />
+              {t('tools.compound.params')}
+            </h2>
+
+            {/* Current Age */}
+            <div className="mb-5">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                {t('tools.fire.currentAge')}
+              </label>
+              <input
+                type="number"
+                value={currentAge}
+                onChange={(e) => setCurrentAge(Number(e.target.value))}
+                className="block w-full pl-3 pr-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+              />
+            </div>
+
+            {/* Net Worth */}
+            <div className="mb-5">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                {t('tools.fire.netWorth')}
+              </label>
+              <input
+                type="text"
+                value={formatInputValue(netWorth)}
+                onChange={handleCurrencyChange(setNetWorth)}
+                className="block w-full pl-3 pr-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+              />
+            </div>
+
+            {/* Income with Frequency */}
+            <div className="mb-5">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                {t('tools.fire.income')}
+              </label>
+              <div className="flex rounded-md shadow-sm">
+                <input
+                  type="text"
+                  value={formatInputValue(income)}
+                  onChange={handleCurrencyChange(setIncome)}
+                  className="block w-full pl-3 pr-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-l-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white flex-1"
+                />
+                <select
+                  value={incomeFreq}
+                  onChange={(e) => setIncomeFreq(e.target.value as Frequency)}
+                  className="pl-2 pr-6 py-2.5 border-t border-b border-r border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-600 text-slate-600 dark:text-slate-200 text-sm rounded-r-lg focus:ring-emerald-500 focus:border-emerald-500 cursor-pointer min-w-[90px]"
+                >
+                  <option value="Monthly">/ {t('common.month')}</option>
+                  <option value="Yearly">/ {t('common.year')}</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Expenses with Frequency */}
+            <div className="mb-5">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                {t('tools.fire.expense')}
+              </label>
+              <div className="flex rounded-md shadow-sm">
+                <input
+                  type="text"
+                  value={formatInputValue(expense)}
+                  onChange={handleCurrencyChange(setExpense)}
+                  className="block w-full pl-3 pr-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-l-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white flex-1"
+                />
+                 <select
+                  value={expenseFreq}
+                  onChange={(e) => setExpenseFreq(e.target.value as Frequency)}
+                  className="pl-2 pr-6 py-2.5 border-t border-b border-r border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-600 text-slate-600 dark:text-slate-200 text-sm rounded-r-lg focus:ring-emerald-500 focus:border-emerald-500 cursor-pointer min-w-[90px]"
+                >
+                  <option value="Monthly">/ {t('common.month')}</option>
+                  <option value="Yearly">/ {t('common.year')}</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="border-t border-slate-100 dark:border-slate-700 pt-4 mt-4">
+               <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-4">Nâng cao</h3>
+               
+               <div className="grid grid-cols-2 gap-4">
+                 <div>
+                    <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
+                      {t('tools.fire.returns')}
+                    </label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={returnRate}
+                      onChange={(e) => setReturnRate(Number(e.target.value))}
+                      className="block w-full px-2 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                    />
+                 </div>
+                 <div>
+                    <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
+                      {t('tools.fire.inflation')}
+                    </label>
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={inflationRate}
+                      onChange={(e) => setInflationRate(Number(e.target.value))}
+                      className="block w-full px-2 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                    />
+                 </div>
+               </div>
+               
+               <div className="mt-4">
+                  <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
+                    {t('tools.fire.swr')}
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    value={withdrawalRate}
+                    onChange={(e) => setWithdrawalRate(Number(e.target.value))}
+                    className="block w-full px-2 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                  />
+                  <p className="text-[10px] text-slate-400 mt-1">{t('tools.fire.swrDesc')}</p>
+               </div>
+            </div>
+
+            <button 
+              onClick={() => {
+                setCurrentAge(30);
+                setNetWorth(500000000);
+                setIncome(360000000);
+                setIncomeFreq('Yearly');
+                setExpense(180000000);
+                setExpenseFreq('Yearly');
+                setReturnRate(10);
+                setInflationRate(4);
+                setWithdrawalRate(4);
+              }}
+              className="w-full flex items-center justify-center py-2 mt-6 text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-emerald-200 dark:hover:border-emerald-900 bg-slate-50 dark:bg-slate-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all"
+            >
+              <RefreshCcw className="h-3 w-3 mr-2" /> {t('tools.compound.reset')}
+            </button>
+          </div>
+        </div>
+
+        {/* Right Column: Results */}
+        <div className="lg:col-span-8 space-y-6">
+          
+          {/* Main Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-xl p-5 text-white shadow-lg">
+                <div className="flex items-center gap-2 mb-2 opacity-90">
+                    <Flame className="h-5 w-5" />
+                    <span className="text-sm font-medium">{t('tools.fire.fireNumber')}</span>
+                </div>
+                <div className="text-2xl font-bold tracking-tight">{formatShortVND(fireNumber)}</div>
+                <div className="text-xs mt-2 opacity-80">Mục tiêu tài chính cần đạt</div>
+            </div>
+
+            <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+                <div className="flex items-center gap-2 mb-2 text-slate-500 dark:text-slate-400">
+                    <CalendarCheck className="h-5 w-5" />
+                    <span className="text-sm font-medium">{t('tools.fire.yearsToFire')}</span>
+                </div>
+                <div className="flex items-baseline gap-2">
+                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{yearsToFire} {t('common.year')}</div>
+                    <div className="text-sm text-slate-500 dark:text-slate-400">({t('tools.fire.ageAtFire')}: {ageAtFire})</div>
+                </div>
+            </div>
+
+            <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+                <div className="flex items-center gap-2 mb-2 text-slate-500 dark:text-slate-400">
+                    <PiggyBank className="h-5 w-5" />
+                    <span className="text-sm font-medium">{t('tools.fire.savingsRate')}</span>
+                </div>
+                <div className={`text-2xl font-bold ${savingsRate >= 50 ? 'text-emerald-600 dark:text-emerald-400' : savingsRate >= 20 ? 'text-blue-600 dark:text-blue-400' : 'text-amber-600'}`}>
+                    {savingsRate.toFixed(1)}%
+                </div>
+                <div className="text-xs mt-2 text-slate-400">
+                    {savingsRate >= 50 ? 'Xuất sắc!' : savingsRate >= 20 ? 'Khá tốt' : 'Cần cố gắng'}
+                </div>
+            </div>
+          </div>
+
+          {/* Alert if logic is weird */}
+          {savingsRate <= 0 && (
+             <div className="bg-rose-50 dark:bg-rose-900/20 p-4 rounded-lg border border-rose-100 dark:border-rose-900/50 flex gap-3">
+               <AlertTriangle className="h-5 w-5 text-rose-600 dark:text-rose-500 flex-shrink-0" />
+               <p className="text-sm text-rose-800 dark:text-rose-200 leading-relaxed">
+                 Bạn đang tiêu nhiều hơn hoặc bằng số tiền kiếm được. Không thể đạt FIRE nếu không có tiền tiết kiệm để đầu tư.
+               </p>
+             </div>
+          )}
+
+          {/* Chart */}
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-emerald-600" />
+              {t('tools.compound.chart')} (Theo sức mua hiện tại)
+            </h3>
+            <div className="h-[400px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={data} margin={{ top: 20, right: 30, left: 10, bottom: 10 }}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartGridColor} />
+                  <XAxis 
+                    dataKey="age" 
+                    type="number" 
+                    domain={['dataMin', 'dataMax']} 
+                    stroke={chartTextColor} 
+                    tick={{fontSize: 12}} 
+                    tickLine={false} 
+                    axisLine={false}
+                    label={{ value: 'Tuổi', position: 'insideBottomRight', offset: -5, fill: chartTextColor }}
+                  />
+                  <YAxis stroke={chartTextColor} tick={{fontSize: 12}} tickLine={false} axisLine={false} tickFormatter={formatShortVND} />
+                  <Tooltip
+                    formatter={(value: number) => formatShortVND(value)}
+                    labelFormatter={(v) => `Tuổi: ${v}`}
+                    contentStyle={{ backgroundColor: chartTooltipBg, borderRadius: '8px', border: `1px solid ${chartTooltipBorder}`, color: chartTextColor }}
+                    itemStyle={{ color: chartTextColor }}
+                  />
+                  <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
+                  <ReferenceLine y={fireNumber} label="Mục tiêu FIRE" stroke="orange" strokeDasharray="3 3" />
+                  <Line type="monotone" dataKey="netWorth" name={t('tools.fire.chartWorth')} stroke="#059669" strokeWidth={3} dot={false} />
+                  <Line type="monotone" dataKey="fireTarget" name={t('tools.fire.chartTarget')} stroke="#f97316" strokeWidth={2} strokeDasharray="5 5" dot={false} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+            <p className="text-xs text-slate-400 mt-4 text-center">
+              *Biểu đồ sử dụng Lãi suất thực (Lãi suất danh nghĩa - Lạm phát) để hiển thị giá trị tương đương với sức mua ngày nay.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default FireCalculator;
