@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, RefreshCcw, ChevronLeft, ChevronRight, Calculator, PieChart, Download, Image as ImageIcon, FileSpreadsheet } from 'lucide-react';
+import { ArrowLeft, RefreshCcw, ChevronLeft, ChevronRight, Calculator, PieChart, Download, Image as ImageIcon, FileSpreadsheet, Info, BookOpen, AlertTriangle } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import html2canvas from 'html2canvas';
 import * as XLSX from 'xlsx';
@@ -176,6 +176,33 @@ const CompoundInterestCalculator: React.FC = () => {
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t('pages.tools.compound.name')}</h1>
         <p className="text-slate-500 dark:text-slate-400 mt-2">{t('pages.tools.compound.desc')}</p>
+      </div>
+
+      {/* EDUCATIONAL SECTION & DISCLAIMER (Merged - Minimalist) */}
+      <div className="mb-10 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden animate-fade-in">
+        <div className="p-5 md:p-6 bg-white dark:bg-transparent">
+            <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                <Info className="h-5 w-5 text-blue-600 dark:text-blue-400" /> 
+                {t('pages.tools.compound.explanationTitle')}
+            </h3>
+            <p className="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mb-3">
+                {t('pages.tools.compound.explanationDesc')}
+            </p>
+            <Link to="/insights/3" className="inline-flex items-center text-sm font-semibold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 transition-colors">
+                <BookOpen className="h-4 w-4 mr-1.5" /> {t('pages.tools.compound.learnMore')}
+            </Link>
+        </div>
+        
+        {/* Warning Footer - Subtle background */}
+        <div className="bg-slate-50 dark:bg-slate-800/50 p-4 border-t border-slate-200 dark:border-slate-700 flex items-start gap-3">
+            <AlertTriangle className="h-5 w-5 text-amber-500 flex-shrink-0 mt-0.5" />
+            <div className="text-sm">
+                <span className="font-semibold text-slate-900 dark:text-slate-200 block mb-0.5">{t('footer.legal')}</span>
+                <p className="text-slate-500 dark:text-slate-400 text-xs leading-relaxed">
+                    {t('pages.tools.compound.disclaimer')}
+                </p>
+            </div>
+        </div>
       </div>
 
       {/* Main Grid: Inputs + Chart */}

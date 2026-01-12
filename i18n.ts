@@ -172,7 +172,11 @@ const resources = {
             "earned": "Tiền lãi",
             "chart": "Biểu đồ tăng trưởng",
             "saveGraph": "Lưu ảnh",
-            "exportExcel": "Xuất Excel"
+            "exportExcel": "Xuất Excel",
+            "explanationTitle": "Lãi suất kép là gì?",
+            "explanationDesc": "Hiểu đơn giản: Tiền lãi sinh ra tiền lãi. Khi bạn tái đầu tư khoản lời kiếm được, số tiền đó sẽ tiếp tục sinh lời trong kỳ tiếp theo, tạo ra hiệu ứng 'hòn tuyết lăn' tăng trưởng theo cấp số nhân.",
+            "disclaimer": "Lưu ý: Các con số dưới đây chỉ mang tính chất tham khảo dựa trên giả định lãi suất không đổi. Thị trường thực tế sẽ luôn biến động.",
+            "learnMore": "Đọc thêm về DCA & Lãi kép"
           },
           "inflation": {
               "name": "Tính lạm phát",

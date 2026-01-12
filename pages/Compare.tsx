@@ -104,7 +104,7 @@ const Compare: React.FC = () => {
   // --- Data Preparation ---
 
   // 1. Group Funds by Type for Selector
-  const fundsByType = useMemo(() => {
+  const fundsByType = useMemo<Record<string, Fund[]>>(() => {
     const groups: Record<string, Fund[]> = {
         'ETF': [],
         'Equity': [],
@@ -202,7 +202,7 @@ const Compare: React.FC = () => {
 
   // 5. Risk/Reward Scatter Data
   const riskRewardData: RiskRewardItem[] = useMemo(() => {
-     const results = selectedChartFundIds.map(id => {
+     const results = selectedChartFundIds.map((id: string) => {
          const history = fundHistories[id];
          const fund = MOCK_FUNDS.find(f => f.id === id);
          
@@ -244,7 +244,7 @@ const Compare: React.FC = () => {
   }, [fundHistories, selectedChartFundIds]);
 
   // 6. Bar Chart Data (Annual Performance) - Static for simplicity or reuse MOCK directly
-  const annualBarData = useMemo(() => {
+  const annualBarData = useMemo<any[]>(() => {
      const fundsToChart = MOCK_FUNDS.filter(f => selectedChartFundIds.includes(f.id));
      if (fundsToChart.length === 0) return [];
 
@@ -256,7 +256,7 @@ const Compare: React.FC = () => {
      
      const sortedYears: number[] = Array.from(allYears).sort((a,b) => a - b);
 
-     return sortedYears.map(year => {
+     return sortedYears.map((year: number) => {
          const entry: any = { year };
          fundsToChart.forEach(fund => {
              const perf = fund.annualPerformance?.find(p => p.year === year);
@@ -391,7 +391,7 @@ const Compare: React.FC = () => {
          )}
 
          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-            {Object.entries(fundsByType).map(([type, funds]) => (
+            {(Object.entries(fundsByType) as [string, Fund[]][]).map(([type, funds]) => (
                 <div key={type} className="space-y-3">
                     <div className="border-b border-slate-100 dark:border-slate-700 pb-1">
                         <h4 className={`text-sm font-bold uppercase tracking-wider ${CATEGORY_INFO[type]?.color || 'text-slate-400'}`}>
