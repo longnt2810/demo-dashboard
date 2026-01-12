@@ -9,6 +9,15 @@ import { useTranslation } from 'react-i18next';
 // --- Types ---
 type TimeFrame = 'YTD' | '6M' | '1Y' | '3Y' | '5Y' | 'ALL' | 'CUSTOM';
 
+interface RiskRewardItem {
+  id: string;
+  name: string;
+  fullName: string;
+  return: number;
+  volatility: number;
+  expenseRatio: number;
+}
+
 // --- Helper: Mock History Generator ---
 const generateMockNavHistory = (fundId: string, baseCagr: number, volatility: number) => {
   const today = new Date();
@@ -192,7 +201,7 @@ const Compare: React.FC = () => {
   }, [fundHistories, selectedChartFundIds]);
 
   // 5. Risk/Reward Scatter Data
-  const riskRewardData = useMemo<{ id: string; name: string; fullName: string; return: number; volatility: number; expenseRatio: number; }[]>(() => {
+  const riskRewardData: RiskRewardItem[] = useMemo(() => {
      const results = selectedChartFundIds.map(id => {
          const history = fundHistories[id];
          const fund = MOCK_FUNDS.find(f => f.id === id);
@@ -231,7 +240,7 @@ const Compare: React.FC = () => {
          };
      });
      
-     return results.filter((item): item is { id: string; name: string; fullName: string; return: number; volatility: number; expenseRatio: number; } => Boolean(item));
+     return results.filter((item): item is RiskRewardItem => Boolean(item));
   }, [fundHistories, selectedChartFundIds]);
 
   // 6. Bar Chart Data (Annual Performance) - Static for simplicity or reuse MOCK directly

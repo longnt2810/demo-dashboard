@@ -79,17 +79,25 @@ export const Header: React.FC = () => {
           <Link
             to={props.href || "#"}
             className={cn(
-              "block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground",
+              "block select-none rounded-xl p-3 leading-none no-underline outline-none transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 focus:bg-slate-100 dark:focus:bg-slate-800 group",
               className
             )}
           >
-            <div className="flex items-center gap-2 text-base font-medium leading-none text-foreground">
-              {Icon && <Icon className="h-4 w-4 text-primary" />}
-              {title}
+            <div className="flex items-start gap-4">
+              {Icon && (
+                <div className="flex-shrink-0 p-2.5 rounded-lg bg-emerald-100/80 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-200/80 dark:group-hover:bg-emerald-900/50 transition-colors">
+                  <Icon className="h-5 w-5" />
+                </div>
+              )}
+              <div className="flex flex-col gap-1">
+                <div className="text-base font-semibold leading-none text-foreground group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors">
+                  {title}
+                </div>
+                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground group-hover:text-slate-600 dark:group-hover:text-slate-300">
+                  {children}
+                </p>
+              </div>
             </div>
-            <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1.5 ml-6">
-              {children}
-            </p>
           </Link>
         </NavigationMenuLink>
       </li>
@@ -101,7 +109,7 @@ export const Header: React.FC = () => {
   // Increased font-size to text-base
   const customTriggerStyle = cn(
     navigationMenuTriggerStyle(),
-    "bg-transparent hover:bg-accent hover:text-accent-foreground data-[state=open]:bg-accent data-[state=open]:text-accent-foreground h-10 px-4 text-base"
+    "bg-transparent hover:bg-slate-100/50 dark:hover:bg-slate-800/50 hover:text-emerald-700 dark:hover:text-emerald-400 data-[state=open]:bg-slate-100/50 dark:data-[state=open]:bg-slate-800/50 h-10 px-4 text-base font-medium"
   );
 
   return (
@@ -112,7 +120,7 @@ export const Header: React.FC = () => {
           {/* Logo Section */}
           <div className="flex items-center flex-shrink-0 mr-8">
             <Link to="/" className="flex items-center gap-2 group">
-              <div className="bg-primary p-1.5 rounded-lg group-hover:bg-primary/90 transition-colors">
+              <div className="bg-primary p-1.5 rounded-lg group-hover:bg-primary/90 transition-colors shadow-sm">
                 <TrendingUp className="h-6 w-6 text-primary-foreground" />
               </div>
               <span className="font-bold text-xl tracking-tight text-foreground hidden sm:block">
@@ -135,7 +143,7 @@ export const Header: React.FC = () => {
                                               to={item.path}
                                               className={cn(
                                                   customTriggerStyle,
-                                                  isActive(item.path) && "text-primary font-bold"
+                                                  isActive(item.path) && "text-emerald-700 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-900/10"
                                               )}
                                           >
                                               {item.label}
@@ -149,7 +157,7 @@ export const Header: React.FC = () => {
                           if ((item as any).children) {
                               return (
                                   <NavigationMenuItem key={item.path}>
-                                      <NavigationMenuTrigger className={cn(customTriggerStyle, isActive(item.path) && "text-primary font-bold")}>
+                                      <NavigationMenuTrigger className={cn(customTriggerStyle, isActive(item.path) && "text-emerald-700 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-900/10")}>
                                           {item.label}
                                       </NavigationMenuTrigger>
                                       <NavigationMenuContent>
@@ -174,7 +182,7 @@ export const Header: React.FC = () => {
                           if (item.groups) {
                               return (
                                   <NavigationMenuItem key={item.path}>
-                                      <NavigationMenuTrigger className={cn(customTriggerStyle, isActive(item.path) && "text-primary font-bold")}>
+                                      <NavigationMenuTrigger className={cn(customTriggerStyle, isActive(item.path) && "text-emerald-700 dark:text-emerald-400 font-bold bg-emerald-50 dark:bg-emerald-900/10")}>
                                           {item.label}
                                       </NavigationMenuTrigger>
                                       <NavigationMenuContent>
@@ -190,21 +198,23 @@ export const Header: React.FC = () => {
                                                                   <NavigationMenuLink asChild>
                                                                       <Link
                                                                           to={subItem.path}
-                                                                          className="group block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                                                          className="group block select-none rounded-xl p-3 leading-none no-underline outline-none transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 focus:bg-slate-100 dark:focus:bg-slate-800"
                                                                       >
-                                                                          <div className="flex items-center gap-2 text-base font-medium text-foreground">
-                                                                              <div className="bg-muted p-1.5 rounded text-primary group-hover:bg-background transition-colors">
-                                                                                  <subItem.icon className="h-4 w-4" />
+                                                                          <div className="flex items-start gap-4">
+                                                                              <div className="flex-shrink-0 p-2.5 rounded-lg bg-emerald-100/80 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-200/80 dark:group-hover:bg-emerald-900/50 transition-colors">
+                                                                                  <subItem.icon className="h-5 w-5" />
                                                                               </div>
-                                                                              <span className="group-hover:text-primary transition-colors">
-                                                                                  {subItem.label}
-                                                                              </span>
+                                                                              <div className="flex flex-col gap-1">
+                                                                                  <div className="text-base font-semibold text-foreground group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors">
+                                                                                      {subItem.label}
+                                                                                  </div>
+                                                                                  {subItem.desc && (
+                                                                                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground group-hover:text-slate-600 dark:group-hover:text-slate-300">
+                                                                                          {subItem.desc}
+                                                                                      </p>
+                                                                                  )}
+                                                                              </div>
                                                                           </div>
-                                                                          {subItem.desc && (
-                                                                              <p className="line-clamp-2 text-sm leading-snug text-muted-foreground mt-1.5 ml-9">
-                                                                                  {subItem.desc}
-                                                                              </p>
-                                                                          )}
                                                                       </Link>
                                                                   </NavigationMenuLink>
                                                               </li>
@@ -260,30 +270,30 @@ export const Header: React.FC = () => {
                       <span className="font-bold text-xl text-foreground">Menu</span>
                     </div>
                     
-                    <div className="flex-1 px-4 space-y-1">
+                    <div className="flex-1 px-4 space-y-2">
                       {navItems.map((item) => (
                         <React.Fragment key={item.path}>
                           {!item.groups && !(item as any).children ? (
                             <SheetClose asChild>
                               <Link
                                 to={item.path}
-                                className={`block px-4 py-3 rounded-lg text-lg font-medium transition-colors ${
+                                className={`block px-4 py-3 rounded-xl text-lg font-medium transition-colors ${
                                   isActive(item.path)
-                                    ? 'bg-accent text-primary'
-                                    : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+                                    ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
+                                    : 'text-muted-foreground hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-foreground'
                                 }`}
                               >
                                 {item.label}
                               </Link>
                             </SheetClose>
                           ) : (
-                            <div className="px-4 py-2">
-                              <div className="font-bold text-lg text-foreground mb-2">
+                            <div className="px-2 py-2">
+                              <div className="font-bold text-lg text-foreground mb-3 px-2">
                                 {item.label}
                               </div>
                               
                               {item.groups ? (
-                                  <div className="space-y-4 ml-2 border-l-2 border-border pl-3">
+                                  <div className="space-y-4 ml-2 border-l-2 border-border pl-4">
                                       {item.groups.map((group, idx) => (
                                       <div key={idx}>
                                           <div className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
@@ -294,17 +304,21 @@ export const Header: React.FC = () => {
                                               <SheetClose asChild key={subItem.path}>
                                                 <Link
                                                   to={subItem.path}
-                                                  className="flex flex-col py-2 transition-colors hover:text-primary"
+                                                  className="flex items-start gap-3 py-3 px-2 rounded-lg transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
                                                 >
-                                                    <div className="flex items-center gap-2 text-base text-foreground/80 font-medium">
-                                                        <subItem.icon className="h-4 w-4" />
-                                                        {subItem.label}
+                                                    <div className="mt-0.5 text-emerald-600 dark:text-emerald-400">
+                                                        <subItem.icon className="h-5 w-5" />
                                                     </div>
-                                                    {subItem.desc && (
-                                                        <span className="text-sm text-muted-foreground ml-6 mt-0.5 line-clamp-1">
-                                                            {subItem.desc}
-                                                        </span>
-                                                    )}
+                                                    <div>
+                                                        <div className="text-base font-medium text-foreground">
+                                                            {subItem.label}
+                                                        </div>
+                                                        {subItem.desc && (
+                                                            <div className="text-sm text-muted-foreground line-clamp-1">
+                                                                {subItem.desc}
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 </Link>
                                               </SheetClose>
                                           ))}
@@ -313,22 +327,26 @@ export const Header: React.FC = () => {
                                       ))}
                                   </div>
                               ) : (item as any).children ? (
-                                <div className="space-y-1 ml-2 border-l-2 border-border pl-3">
+                                <div className="space-y-1 ml-2 border-l-2 border-border pl-4">
                                   {(item as any).children.map((subItem: any) => (
                                     <SheetClose asChild key={subItem.path}>
                                       <Link
                                         to={subItem.path}
-                                        className="flex flex-col py-2 transition-colors hover:text-primary"
+                                        className="flex items-start gap-3 py-3 px-2 rounded-lg transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
                                       >
-                                         <div className="flex items-center gap-2 text-base text-foreground/80 font-medium">
-                                            <subItem.icon className="h-4 w-4" />
-                                            {subItem.label}
+                                         <div className="mt-0.5 text-emerald-600 dark:text-emerald-400">
+                                            <subItem.icon className="h-5 w-5" />
                                          </div>
-                                         {subItem.desc && (
-                                            <span className="text-sm text-muted-foreground ml-6 mt-0.5 line-clamp-1">
-                                                {subItem.desc}
-                                            </span>
-                                         )}
+                                         <div>
+                                            <div className="text-base font-medium text-foreground">
+                                                {subItem.label}
+                                            </div>
+                                            {subItem.desc && (
+                                                <div className="text-sm text-muted-foreground line-clamp-1">
+                                                    {subItem.desc}
+                                                </div>
+                                            )}
+                                         </div>
                                       </Link>
                                     </SheetClose>
                                   ))}

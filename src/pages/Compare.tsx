@@ -4,9 +4,19 @@ import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tool
 import { MOCK_FUNDS } from '../constants';
 import { ThemeContext } from '../App';
 import { Fund } from '../types';
+import { useTranslation } from 'react-i18next';
 
 // --- Types ---
 type TimeFrame = 'YTD' | '6M' | '1Y' | '3Y' | '5Y' | 'ALL' | 'CUSTOM';
+
+interface RiskRewardItem {
+  id: string;
+  name: string;
+  fullName: string;
+  return: number;
+  volatility: number;
+  expenseRatio: number;
+}
 
 // --- Helper: Mock History Generator ---
 const generateMockNavHistory = (fundId: string, baseCagr: number, volatility: number) => {
@@ -68,6 +78,7 @@ const CATEGORY_INFO: Record<string, { label: string; desc: string; color: string
 
 const Compare: React.FC = () => {
   const { isDark } = useContext(ThemeContext);
+  const { t } = useTranslation();
   
   // --- State ---
   const [timeFrame, setTimeFrame] = useState<TimeFrame>('1Y');
@@ -190,7 +201,7 @@ const Compare: React.FC = () => {
   }, [fundHistories, selectedChartFundIds]);
 
   // 5. Risk/Reward Scatter Data
-  const riskRewardData = useMemo<{ id: string; name: string; fullName: string; return: number; volatility: number; expenseRatio: number; }[]>(() => {
+  const riskRewardData: RiskRewardItem[] = useMemo(() => {
      const results = selectedChartFundIds.map(id => {
          const history = fundHistories[id];
          const fund = MOCK_FUNDS.find(f => f.id === id);
@@ -229,7 +240,7 @@ const Compare: React.FC = () => {
          };
      });
      
-     return results.filter((item): item is { id: string; name: string; fullName: string; return: number; volatility: number; expenseRatio: number; } => Boolean(item));
+     return results.filter((item): item is RiskRewardItem => Boolean(item));
   }, [fundHistories, selectedChartFundIds]);
 
   // 6. Bar Chart Data (Annual Performance) - Static for simplicity or reuse MOCK directly
@@ -329,8 +340,8 @@ const Compare: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">So sánh Hiệu suất Quỹ</h1>
-        <p className="text-slate-500 dark:text-slate-400 mt-2">Phân tích và đối chiếu sự tăng trưởng giữa các quỹ đầu tư khác nhau.</p>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t('pages.compare.title')}</h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-2">{t('pages.compare.subtitle')}</p>
       </div>
 
       {/* --- SECTION 1: DETAILED FUND SELECTOR --- */}
@@ -338,13 +349,13 @@ const Compare: React.FC = () => {
          <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
             <h3 className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Check className="h-5 w-5 text-emerald-600" />
-                Chọn quỹ để so sánh ({selectedChartFundIds.length}/5)
+                {t('pages.compare.selectFunds')} ({selectedChartFundIds.length}/5)
             </h3>
             
             <div className="flex items-center gap-3">
                  {selectedChartFundIds.length >= 5 && (
                     <span className="text-xs text-amber-600 bg-amber-50 dark:bg-amber-900/20 px-2 py-1 rounded flex items-center gap-1">
-                        <AlertCircle className="h-3 w-3" /> Đã đạt giới hạn
+                        <AlertCircle className="h-3 w-3" /> {t('pages.compare.limitReached')}
                     </span>
                 )}
                 <button 
@@ -356,7 +367,7 @@ const Compare: React.FC = () => {
                     }`}
                 >
                     {showGuide ? <X className="h-3 w-3" /> : <HelpCircle className="h-3 w-3" />}
-                    {showGuide ? 'Đóng hướng dẫn' : 'Hướng dẫn phân loại'}
+                    {showGuide ? t('pages.compare.closeGuide') : t('pages.compare.guideBtn')}
                 </button>
             </div>
          </div>
@@ -366,7 +377,7 @@ const Compare: React.FC = () => {
              <div className="mb-6 p-4 bg-slate-50 dark:bg-slate-700/30 rounded-lg border border-slate-100 dark:border-slate-700 animate-fade-in-down">
                  <h4 className="text-sm font-bold text-slate-800 dark:text-white mb-3 flex items-center gap-2">
                     <Info className="h-4 w-4 text-emerald-600" />
-                    Giải thích các loại quỹ
+                    {t('pages.compare.guideTitle')}
                  </h4>
                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {Object.entries(CATEGORY_INFO).map(([key, info]) => (
@@ -435,7 +446,7 @@ const Compare: React.FC = () => {
                 <div>
                     <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                         <LineChartIcon className="h-5 w-5 text-emerald-600" />
-                        Tăng trưởng (%)
+                        {t('pages.compare.growthTitle')}
                     </h3>
                 </div>
                 
@@ -451,7 +462,7 @@ const Compare: React.FC = () => {
                                     : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                                 }`}
                             >
-                                {tf}
+                                {tf === 'CUSTOM' ? 'Tùy chọn' : tf}
                             </button>
                         ))}
                     </div>
@@ -526,11 +537,11 @@ const Compare: React.FC = () => {
             <div className="flex items-center justify-between mb-2">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                     <Activity className="h-5 w-5 text-rose-500" />
-                    Rủi ro & Lợi nhuận
+                    {t('pages.compare.riskTitle')}
                 </h3>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
-                Tương quan giữa Lợi nhuận và Biến động (Rủi ro) trong khung thời gian {timeFrame !== 'CUSTOM' ? timeFrame : 'tùy chọn'}.
+                {t('pages.compare.riskDesc')} {timeFrame !== 'CUSTOM' ? timeFrame : 'tùy chọn'}.
             </p>
 
             <div className="h-[280px] relative">
@@ -604,7 +615,7 @@ const Compare: React.FC = () => {
          <div className="flex items-center justify-between mb-6">
             <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <BarChart2 className="h-5 w-5 text-emerald-600" />
-                Hiệu suất từng năm (%)
+                {t('pages.compare.annualTitle')}
             </h3>
          </div>
 
@@ -642,18 +653,18 @@ const Compare: React.FC = () => {
       {/* --- SECTION 5: METRICS TABLE --- */}
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div className="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
-            <h3 className="font-semibold text-slate-900 dark:text-white">Tổng hợp Chỉ số</h3>
+            <h3 className="font-semibold text-slate-900 dark:text-white">{t('pages.compare.metricsTitle')}</h3>
         </div>
         <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
                 <thead className="bg-white dark:bg-slate-800">
                     <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Quỹ</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">1 Năm</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">3 Năm (TB)</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">5 Năm (TB)</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Độ biến động</th>
-                        <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Phí Quản lý</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">{t('pages.compare.table.fund')}</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">{t('pages.compare.table.1y')}</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">{t('pages.compare.table.3y')}</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">{t('pages.compare.table.5y')}</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">{t('pages.compare.table.volatility')}</th>
+                        <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">{t('pages.compare.table.expense')}</th>
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
