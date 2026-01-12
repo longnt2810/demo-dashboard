@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { TrendingUp, Menu, Moon, Sun, Scale, PieChart, Briefcase, Calculator, Target, Flame, TrendingDown, Landmark } from 'lucide-react';
 import { ThemeContext } from '../../App';
 import { Button } from '../ui/button';
-import { Sheet, SheetContent, SheetTrigger, SheetClose } from '../ui/sheet';
+import { Sheet, SheetContent, SheetTrigger, SheetClose, SheetTitle } from '../ui/sheet';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -83,17 +83,17 @@ export const Header: React.FC = () => {
               className
             )}
           >
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-3">
               {Icon && (
-                <div className="flex-shrink-0 p-2.5 rounded-lg bg-emerald-100/80 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-200/80 dark:group-hover:bg-emerald-900/50 transition-colors">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-100/80 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-200/80 dark:group-hover:bg-emerald-900/50 transition-colors">
                   <Icon className="h-5 w-5" />
                 </div>
               )}
-              <div className="flex flex-col gap-1">
-                <div className="text-base font-semibold leading-none text-foreground group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors">
+              <div className="space-y-1">
+                <div className="text-sm font-semibold leading-none text-foreground group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors pt-1">
                   {title}
                 </div>
-                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground group-hover:text-slate-600 dark:group-hover:text-slate-300">
+                <p className="line-clamp-2 text-xs leading-snug text-muted-foreground group-hover:text-slate-600 dark:group-hover:text-slate-300">
                   {children}
                 </p>
               </div>
@@ -200,16 +200,16 @@ export const Header: React.FC = () => {
                                                                           to={subItem.path}
                                                                           className="group block select-none rounded-xl p-3 leading-none no-underline outline-none transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 focus:bg-slate-100 dark:focus:bg-slate-800"
                                                                       >
-                                                                          <div className="flex items-start gap-4">
-                                                                              <div className="flex-shrink-0 p-2.5 rounded-lg bg-emerald-100/80 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-200/80 dark:group-hover:bg-emerald-900/50 transition-colors">
+                                                                          <div className="flex items-start gap-3">
+                                                                              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-100/80 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 group-hover:bg-emerald-200/80 dark:group-hover:bg-emerald-900/50 transition-colors">
                                                                                   <subItem.icon className="h-5 w-5" />
                                                                               </div>
-                                                                              <div className="flex flex-col gap-1">
-                                                                                  <div className="text-base font-semibold text-foreground group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors">
+                                                                              <div className="space-y-1">
+                                                                                  <div className="text-sm font-semibold leading-none text-foreground group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition-colors pt-1">
                                                                                       {subItem.label}
                                                                                   </div>
                                                                                   {subItem.desc && (
-                                                                                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground group-hover:text-slate-600 dark:group-hover:text-slate-300">
+                                                                                      <p className="line-clamp-2 text-xs leading-snug text-muted-foreground group-hover:text-slate-600 dark:group-hover:text-slate-300">
                                                                                           {subItem.desc}
                                                                                       </p>
                                                                                   )}
@@ -267,7 +267,7 @@ export const Header: React.FC = () => {
                       <div className="bg-primary p-1.5 rounded-lg">
                         <TrendingUp className="h-5 w-5 text-primary-foreground" />
                       </div>
-                      <span className="font-bold text-xl text-foreground">Menu</span>
+                      <SheetTitle className="font-bold text-xl text-foreground">Menu</SheetTitle>
                     </div>
                     
                     <div className="flex-1 px-4 space-y-2">
@@ -304,17 +304,17 @@ export const Header: React.FC = () => {
                                               <SheetClose asChild key={subItem.path}>
                                                 <Link
                                                   to={subItem.path}
-                                                  className="flex items-start gap-3 py-3 px-2 rounded-lg transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
+                                                  className="flex items-start gap-3 py-2 px-2 rounded-lg transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
                                                 >
-                                                    <div className="mt-0.5 text-emerald-600 dark:text-emerald-400">
-                                                        <subItem.icon className="h-5 w-5" />
+                                                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-100/80 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
+                                                        <subItem.icon className="h-4 w-4" />
                                                     </div>
                                                     <div>
-                                                        <div className="text-base font-medium text-foreground">
+                                                        <div className="text-base font-medium text-foreground pt-1">
                                                             {subItem.label}
                                                         </div>
                                                         {subItem.desc && (
-                                                            <div className="text-sm text-muted-foreground line-clamp-1">
+                                                            <div className="text-xs text-muted-foreground line-clamp-1">
                                                                 {subItem.desc}
                                                             </div>
                                                         )}
@@ -332,17 +332,17 @@ export const Header: React.FC = () => {
                                     <SheetClose asChild key={subItem.path}>
                                       <Link
                                         to={subItem.path}
-                                        className="flex items-start gap-3 py-3 px-2 rounded-lg transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
+                                        className="flex items-start gap-3 py-2 px-2 rounded-lg transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
                                       >
-                                         <div className="mt-0.5 text-emerald-600 dark:text-emerald-400">
-                                            <subItem.icon className="h-5 w-5" />
+                                         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-100/80 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400">
+                                            <subItem.icon className="h-4 w-4" />
                                          </div>
                                          <div>
-                                            <div className="text-base font-medium text-foreground">
+                                            <div className="text-base font-medium text-foreground pt-1">
                                                 {subItem.label}
                                             </div>
                                             {subItem.desc && (
-                                                <div className="text-sm text-muted-foreground line-clamp-1">
+                                                <div className="text-xs text-muted-foreground line-clamp-1">
                                                     {subItem.desc}
                                                 </div>
                                             )}
