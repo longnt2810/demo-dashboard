@@ -36,7 +36,7 @@ const Funds: React.FC = () => {
 
   const getCategoryLabel = (cat: FundCategory) => {
     switch (cat) {
-        case 'All': return t('pages.funds.filterAll');
+        case 'All': return t('fundsPage.filterAll');
         case 'Equity': return 'Cổ phiếu (Equity)';
         case 'Bond': return 'Trái phiếu (Bond)';
         case 'Balanced': return 'Cân bằng (Balanced)';
@@ -60,8 +60,8 @@ const Funds: React.FC = () => {
       
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
         <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t('pages.funds.title')}</h1>
-            <p className="text-slate-500 dark:text-slate-400 mt-2">{t('pages.funds.subtitle')}</p>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t('fundsPage.title')}</h1>
+            <p className="text-slate-500 dark:text-slate-400 mt-2">{t('fundsPage.subtitle')}</p>
         </div>
         <Link 
             to="/compare" 
@@ -81,7 +81,7 @@ const Funds: React.FC = () => {
           <input
             type="text"
             className="block w-full pl-10 pr-3 py-2 border border-slate-300 dark:border-slate-600 rounded-xl leading-5 bg-white dark:bg-slate-700 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-colors"
-            placeholder={t('pages.funds.searchPlaceholder')}
+            placeholder={t('fundsPage.searchPlaceholder')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -116,13 +116,13 @@ const Funds: React.FC = () => {
           <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
             <thead className="bg-slate-50 dark:bg-slate-900/50">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.funds.table.info')}</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.funds.table.type')} / Rủi ro</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.funds.table.nav')}</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.funds.table.return1Y')}</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.funds.table.cagr3Y')}</th>
-                <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.funds.table.expense')}</th>
-                <th className="px-6 py-4 relative"><span className="sr-only">{t('pages.funds.table.action')}</span></th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('fundsPage.table.info')}</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('fundsPage.table.type')} / Rủi ro</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('fundsPage.table.nav')}</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('fundsPage.table.return1Y')}</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('fundsPage.table.cagr3Y')}</th>
+                <th className="px-6 py-4 text-right text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('fundsPage.table.expense')}</th>
+                <th className="px-6 py-4 relative"><span className="sr-only">{t('fundsPage.table.action')}</span></th>
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
@@ -186,7 +186,7 @@ const Funds: React.FC = () => {
               {filteredTableFunds.length === 0 && (
                 <tr>
                   <td colSpan={7} className="px-6 py-12 text-center text-slate-500 dark:text-slate-400">
-                    {t('pages.funds.noFunds')}
+                    {t('fundsPage.noFunds')}
                   </td>
                 </tr>
               )}

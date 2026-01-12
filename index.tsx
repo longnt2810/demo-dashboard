@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { I18nextProvider } from 'react-i18next';
 import App from './App';
 import i18n from './i18n';
-import './index.css'; // Import CSS
+import './global.css'; // Updated to use the new global CSS file
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

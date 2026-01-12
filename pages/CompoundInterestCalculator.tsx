@@ -170,12 +170,12 @@ const CompoundInterestCalculator: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <Link to="/tools" className="inline-flex items-center text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 mb-6 transition-colors">
-        <ArrowLeft className="h-4 w-4 mr-1" /> {t('common.tools')}
+        <ArrowLeft className="h-4 w-4 mr-1" /> {t('navigation.tools')}
       </Link>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t('tools.compound.name')}</h1>
-        <p className="text-slate-500 dark:text-slate-400 mt-2">{t('tools.compound.desc')}</p>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t('pages.tools.compound.name')}</h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-2">{t('pages.tools.compound.desc')}</p>
       </div>
 
       {/* Main Grid: Inputs + Chart */}
@@ -186,13 +186,13 @@ const CompoundInterestCalculator: React.FC = () => {
           <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
             <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
               <Calculator className="h-5 w-5 text-emerald-600" />
-              {t('tools.compound.params')}
+              {t('pages.tools.compound.params')}
             </h2>
 
             {/* Initial Investment */}
             <div className="mb-5">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                {t('tools.compound.initial')}
+                {t('pages.tools.compound.initial')}
               </label>
               <div className="relative rounded-md shadow-sm">
                  <input
@@ -207,7 +207,7 @@ const CompoundInterestCalculator: React.FC = () => {
             {/* Contribution */}
             <div className="mb-5">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                {t('tools.compound.cont')}
+                {t('pages.tools.compound.cont')}
               </label>
               <div className="flex gap-2">
                 <div className="relative rounded-md shadow-sm flex-grow">
@@ -234,7 +234,7 @@ const CompoundInterestCalculator: React.FC = () => {
             {/* Interest Rate */}
             <div className="mb-5">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                {t('tools.compound.rate')}
+                {t('pages.tools.compound.rate')}
               </label>
               <input
                 type="number"
@@ -250,7 +250,7 @@ const CompoundInterestCalculator: React.FC = () => {
             {/* Duration */}
             <div className="mb-5">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                {t('tools.compound.period')}: {years} {t('common.year')}
+                {t('pages.tools.compound.period')}: {years} {t('common.year')}
               </label>
               <input
                 type="range"
@@ -274,9 +274,9 @@ const CompoundInterestCalculator: React.FC = () => {
                 setInterestRate(10);
                 setYears(10);
               }}
-              className="w-full flex items-center justify-center py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-emerald-200 dark:hover:border-emerald-900 bg-slate-50 dark:bg-slate-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all"
+              className="w-full flex items-center justify-center py-3 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 bg-slate-100 hover:bg-rose-50 dark:bg-slate-800 dark:hover:bg-rose-900/20 rounded-full transition-all"
             >
-              <RefreshCcw className="h-3 w-3 mr-2" /> {t('tools.compound.reset')}
+              <RefreshCcw className="h-4 w-4 mr-2" /> {t('pages.tools.compound.reset')}
             </button>
           </div>
         </div>
@@ -287,15 +287,15 @@ const CompoundInterestCalculator: React.FC = () => {
           {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-               <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">{t('tools.compound.summary', {years})}</div>
+               <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">{t('pages.tools.compound.summary', {years})}</div>
                <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{formatShortVND(finalResult.totalBalance)}</div>
              </div>
              <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-               <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">{t('simulator.totalInv')}</div>
+               <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">{t('pages.simulator.totalInv')}</div>
                <div className="text-xl font-bold text-slate-900 dark:text-white">{formatShortVND(finalResult.totalInvested)}</div>
              </div>
              <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-               <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">{t('tools.compound.earned')}</div>
+               <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">{t('pages.tools.compound.earned')}</div>
                <div className="text-xl font-bold text-indigo-600 dark:text-indigo-400">{formatShortVND(finalResult.interestEarned)}</div>
              </div>
           </div>
@@ -305,13 +305,13 @@ const CompoundInterestCalculator: React.FC = () => {
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <PieChart className="h-5 w-5 text-emerald-600" />
-                {t('tools.compound.chart')}
+                {t('pages.tools.compound.chart')}
               </h3>
               <button 
                 onClick={handleExportImage}
-                className="text-xs flex items-center gap-1 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700"
+                className="group flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:text-emerald-600 rounded-full shadow-sm hover:shadow-md transition-all text-sm font-bold"
               >
-                <ImageIcon className="h-4 w-4" /> {t('tools.compound.saveGraph')}
+                <ImageIcon className="h-4 w-4" /> {t('pages.tools.compound.saveGraph')}
               </button>
             </div>
             <div className="h-[350px]" ref={chartRef}>
@@ -336,8 +336,8 @@ const CompoundInterestCalculator: React.FC = () => {
                     itemStyle={{ color: chartTextColor }}
                   />
                   <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
-                  <Area type="monotone" dataKey="totalInvested" name={t('simulator.totalInv')} stackId="1" stroke="#64748b" fill="url(#colorInvested)" />
-                  <Area type="monotone" dataKey="interestEarned" name={t('tools.compound.earned')} stackId="1" stroke="#059669" fill="url(#colorInterest)" />
+                  <Area type="monotone" dataKey="totalInvested" name={t('pages.simulator.totalInv')} stackId="1" stroke="#64748b" fill="url(#colorInvested)" />
+                  <Area type="monotone" dataKey="interestEarned" name={t('pages.tools.compound.earned')} stackId="1" stroke="#059669" fill="url(#colorInterest)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -348,12 +348,12 @@ const CompoundInterestCalculator: React.FC = () => {
       {/* Paginated Table - Full Width */}
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
           <div className="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 flex items-center justify-between">
-            <h3 className="font-semibold text-slate-900 dark:text-white">{t('simulator.breakdown')}</h3>
+            <h3 className="font-semibold text-slate-900 dark:text-white">{t('pages.simulator.breakdown')}</h3>
             <button 
               onClick={handleExportExcel}
-              className="text-xs flex items-center gap-1 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700"
+              className="group flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:text-emerald-600 rounded-full shadow-sm hover:shadow-md transition-all text-sm font-bold"
             >
-              <FileSpreadsheet className="h-4 w-4" /> {t('tools.compound.exportExcel')}
+              <FileSpreadsheet className="h-4 w-4" /> {t('pages.tools.compound.exportExcel')}
             </button>
           </div>
           <div className="overflow-x-auto">
@@ -361,9 +361,9 @@ const CompoundInterestCalculator: React.FC = () => {
               <thead className="bg-white dark:bg-slate-800">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('common.year')}</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('simulator.totalInv')}</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('tools.compound.earned')}</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('simulator.table.value')}</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.simulator.totalInv')}</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.tools.compound.earned')}</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.simulator.table.value')}</th>
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">

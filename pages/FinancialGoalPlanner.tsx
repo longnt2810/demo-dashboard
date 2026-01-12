@@ -183,12 +183,12 @@ const FinancialGoalPlanner: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <Link to="/tools" className="inline-flex items-center text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 mb-6 transition-colors">
-        <ArrowLeft className="h-4 w-4 mr-1" /> {t('common.tools')}
+        <ArrowLeft className="h-4 w-4 mr-1" /> {t('navigation.tools')}
       </Link>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t('tools.goal.name')}</h1>
-        <p className="text-slate-500 dark:text-slate-400 mt-2">{t('tools.goal.desc')}</p>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t('pages.tools.goal.name')}</h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-2">{t('pages.tools.goal.desc')}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
@@ -198,13 +198,13 @@ const FinancialGoalPlanner: React.FC = () => {
           <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
             <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
               <Target className="h-5 w-5 text-emerald-600" />
-              {t('tools.compound.params')}
+              {t('pages.tools.compound.params')}
             </h2>
 
             {/* Target Amount */}
             <div className="mb-5">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                {t('tools.goal.target')}
+                {t('pages.tools.goal.target')}
               </label>
               <div className="relative rounded-md shadow-sm">
                  <input
@@ -219,7 +219,7 @@ const FinancialGoalPlanner: React.FC = () => {
             {/* Initial Investment */}
             <div className="mb-5">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                {t('tools.goal.current')}
+                {t('pages.tools.goal.current')}
               </label>
               <div className="relative rounded-md shadow-sm">
                  <input
@@ -234,7 +234,7 @@ const FinancialGoalPlanner: React.FC = () => {
             {/* Interest Rate */}
             <div className="mb-5">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                {t('tools.compound.rate')}
+                {t('pages.tools.compound.rate')}
               </label>
               <input
                 type="number"
@@ -250,7 +250,7 @@ const FinancialGoalPlanner: React.FC = () => {
             {/* Duration */}
             <div className="mb-5">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                {t('tools.compound.period')}: {years} {t('common.year')}
+                {t('pages.tools.compound.period')}: {years} {t('common.year')}
               </label>
               <input
                 type="range"
@@ -269,7 +269,7 @@ const FinancialGoalPlanner: React.FC = () => {
             {/* Frequency Selector for Output */}
             <div className="mb-5">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                {t('tools.compound.freq')}
+                {t('pages.tools.compound.freq')}
               </label>
               <select 
                 value={frequency}
@@ -291,9 +291,9 @@ const FinancialGoalPlanner: React.FC = () => {
                 setYears(5);
                 setFrequency('Monthly');
               }}
-              className="w-full flex items-center justify-center py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-emerald-200 dark:hover:border-emerald-900 bg-slate-50 dark:bg-slate-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all"
+              className="w-full flex items-center justify-center py-3 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 bg-slate-100 hover:bg-rose-50 dark:bg-slate-800 dark:hover:bg-rose-900/20 rounded-full transition-all"
             >
-              <RefreshCcw className="h-3 w-3 mr-2" /> {t('tools.compound.reset')}
+              <RefreshCcw className="h-4 w-4 mr-2" /> {t('pages.tools.compound.reset')}
             </button>
           </div>
         </div>
@@ -304,12 +304,12 @@ const FinancialGoalPlanner: React.FC = () => {
           {/* Summary Card - HERO */}
           <div className="bg-emerald-600 rounded-xl shadow-lg p-6 md:p-8 text-white relative overflow-hidden">
              <div className="relative z-10">
-               <h3 className="text-emerald-100 font-medium text-lg mb-2">{t('tools.goal.result', {freq: frequency})}</h3>
+               <h3 className="text-emerald-100 font-medium text-lg mb-2">{t('pages.tools.goal.result', {freq: frequency})}</h3>
                <div className="text-4xl md:text-5xl font-bold tracking-tight mb-2">
                  {formatVND(Math.round(requiredContribution))}
                </div>
                <p className="text-emerald-100 opacity-90">
-                 {t('tools.goal.resultDesc', {amount: formatShortVND(targetAmount), years})}
+                 {t('pages.tools.goal.resultDesc', {amount: formatShortVND(targetAmount), years})}
                </p>
              </div>
              <div className="absolute right-0 bottom-0 opacity-10 transform translate-x-1/4 translate-y-1/4">
@@ -322,13 +322,13 @@ const FinancialGoalPlanner: React.FC = () => {
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-emerald-600" />
-                {t('tools.compound.chart')}
+                {t('pages.tools.compound.chart')}
               </h3>
               <button 
                 onClick={handleExportImage}
-                className="text-xs flex items-center gap-1 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700"
+                className="group flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:text-emerald-600 rounded-full shadow-sm hover:shadow-md transition-all text-sm font-bold"
               >
-                <ImageIcon className="h-4 w-4" /> {t('tools.compound.saveGraph')}
+                <ImageIcon className="h-4 w-4" /> {t('pages.tools.compound.saveGraph')}
               </button>
             </div>
             <div className="h-[350px]" ref={chartRef}>
@@ -353,8 +353,8 @@ const FinancialGoalPlanner: React.FC = () => {
                     itemStyle={{ color: chartTextColor }}
                   />
                   <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
-                  <Area type="monotone" dataKey="totalInvested" name={t('simulator.table.invested')} stackId="1" stroke="#64748b" fill="url(#colorInvested)" />
-                  <Area type="monotone" dataKey="interestEarned" name={t('tools.compound.earned')} stackId="1" stroke="#059669" fill="url(#colorInterest)" />
+                  <Area type="monotone" dataKey="totalInvested" name={t('pages.simulator.table.invested')} stackId="1" stroke="#64748b" fill="url(#colorInvested)" />
+                  <Area type="monotone" dataKey="interestEarned" name={t('pages.tools.compound.earned')} stackId="1" stroke="#059669" fill="url(#colorInterest)" />
                   {/* Goal Line */}
                 </AreaChart>
               </ResponsiveContainer>
@@ -366,12 +366,12 @@ const FinancialGoalPlanner: React.FC = () => {
       {/* Paginated Table - Full Width */}
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
           <div className="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 flex items-center justify-between">
-            <h3 className="font-semibold text-slate-900 dark:text-white">{t('simulator.breakdown')}</h3>
+            <h3 className="font-semibold text-slate-900 dark:text-white">{t('pages.simulator.breakdown')}</h3>
             <button 
               onClick={handleExportExcel}
-              className="text-xs flex items-center gap-1 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700"
+              className="group flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:text-emerald-600 rounded-full shadow-sm hover:shadow-md transition-all text-sm font-bold"
             >
-              <FileSpreadsheet className="h-4 w-4" /> {t('tools.compound.exportExcel')}
+              <FileSpreadsheet className="h-4 w-4" /> {t('pages.tools.compound.exportExcel')}
             </button>
           </div>
           <div className="overflow-x-auto">
@@ -379,9 +379,9 @@ const FinancialGoalPlanner: React.FC = () => {
               <thead className="bg-white dark:bg-slate-800">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('common.year')}</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('simulator.table.invested')}</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('tools.compound.earned')}</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('simulator.table.value')}</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.simulator.table.invested')}</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.tools.compound.earned')}</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.simulator.table.value')}</th>
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">

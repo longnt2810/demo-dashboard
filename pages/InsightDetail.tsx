@@ -12,9 +12,9 @@ const InsightDetail: React.FC = () => {
   if (!article) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-20 text-center">
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t('insightDetail.notFound')}</h2>
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t('pages.insightDetail.notFound')}</h2>
         <Link to="/insights" className="text-emerald-600 hover:underline mt-4 inline-block">
-          {t('insightDetail.return')}
+          {t('pages.insightDetail.return')}
         </Link>
       </div>
     );
@@ -23,7 +23,7 @@ const InsightDetail: React.FC = () => {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <Link to="/insights" className="inline-flex items-center text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 mb-8 transition-colors">
-        <ArrowLeft className="h-4 w-4 mr-1" /> {t('insightDetail.back')}
+        <ArrowLeft className="h-4 w-4 mr-1" /> {t('pages.insightDetail.back')}
       </Link>
 
       <article className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden transition-colors">

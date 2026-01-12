@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useContext } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Calculator, AlertCircle, Calendar, Plus, X, Check, Search, TrendingUp, DollarSign, Info, Trash2, ListPlus, RotateCcw, Save, CalendarRange, ArrowRight } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LineChart, Line } from 'recharts';
 import { MOCK_FUNDS } from '../constants';
@@ -116,7 +116,8 @@ const generateMockNavHistory = (fundId: string, baseCagr: number, volatility: nu
 };
 
 const Simulator: React.FC = () => {
-  const [searchParams] = useSearchParams();
+  const { search } = useLocation();
+  const searchParams = useMemo(() => new URLSearchParams(search), [search]);
   const { t } = useTranslation();
   const { isDark } = useContext(ThemeContext);
 
@@ -359,7 +360,7 @@ const Simulator: React.FC = () => {
           <p style={{ color: chartTextColor, fontSize: '12px', marginBottom: '8px', fontWeight: 600 }}>{label}</p>
           {payload.map((entry: any, index: number) => {
              const isInvestedLine = entry.name === 'invested';
-             const fundName = isInvestedLine ? t('simulator.totalInv') : (MOCK_FUNDS.find(f => f.id === entry.name)?.code || entry.name);
+             const fundName = isInvestedLine ? t('pages.simulator.totalInv') : (MOCK_FUNDS.find(f => f.id === entry.name)?.code || entry.name);
              const value = entry.value;
              const color = entry.stroke || entry.fill;
              
@@ -416,7 +417,7 @@ const Simulator: React.FC = () => {
              return (
                <div key={index} className="flex items-center gap-2">
                  <div className="w-4 h-0.5" style={{ backgroundColor: color, height: 2 }} />
-                 <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{t('simulator.totalInv')}</span>
+                 <span className="text-sm font-medium text-slate-500 dark:text-slate-400">{t('pages.simulator.totalInv')}</span>
                </div>
              )
           }
@@ -452,8 +453,8 @@ const Simulator: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t('simulator.title')}</h1>
-        <p className="text-slate-500 dark:text-slate-400 mt-2">{t('simulator.subtitle')}</p>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t('pages.simulator.title')}</h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-2">{t('pages.simulator.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -465,14 +466,14 @@ const Simulator: React.FC = () => {
           <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
              <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                 <Calculator className="h-5 w-5 text-emerald-600" />
-                {t('simulator.params')}
+                {t('pages.simulator.params')}
              </h2>
 
              {/* Mode Tabs */}
-             <div className="flex p-1 bg-slate-100 dark:bg-slate-700 rounded-lg mb-6">
+             <div className="flex p-1 bg-slate-100 dark:bg-slate-700 rounded-xl mb-6">
                 <button 
                   onClick={() => setSimulationMode('RECURRING')}
-                  className={`flex-1 flex items-center justify-center gap-2 text-sm font-semibold py-2 rounded-md transition-all ${
+                  className={`flex-1 flex items-center justify-center gap-2 text-sm font-semibold py-2.5 rounded-lg transition-all ${
                     simulationMode === 'RECURRING' 
                       ? 'bg-white dark:bg-slate-600 text-emerald-600 dark:text-white shadow-sm' 
                       : 'text-slate-500 dark:text-slate-400'
@@ -482,7 +483,7 @@ const Simulator: React.FC = () => {
                 </button>
                 <button 
                   onClick={() => setSimulationMode('CUSTOM')}
-                  className={`flex-1 flex items-center justify-center gap-2 text-sm font-semibold py-2 rounded-md transition-all ${
+                  className={`flex-1 flex items-center justify-center gap-2 text-sm font-semibold py-2.5 rounded-lg transition-all ${
                     simulationMode === 'CUSTOM' 
                       ? 'bg-white dark:bg-slate-600 text-emerald-600 dark:text-white shadow-sm' 
                       : 'text-slate-500 dark:text-slate-400'
@@ -497,13 +498,13 @@ const Simulator: React.FC = () => {
                <div className="animate-fade-in">
                  {/* Initial */}
                  <div className="mb-4">
-                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{t('simulator.initialInv')}</label>
+                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{t('pages.simulator.initialInv')}</label>
                    <div className="relative">
                      <input
                        type="text"
                        value={formatInputValue(initialInvestment)}
                        onChange={handleCurrencyChange(setInitialInvestment)}
-                       className="block w-full pl-4 pr-12 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-medium"
+                       className="block w-full pl-4 pr-12 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-medium"
                      />
                      <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">₫</div>
                    </div>
@@ -511,13 +512,13 @@ const Simulator: React.FC = () => {
 
                  {/* Monthly */}
                  <div className="mb-4">
-                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{t('simulator.monthlyCont')}</label>
+                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{t('pages.simulator.monthlyCont')}</label>
                    <div className="relative">
                      <input
                        type="text"
                        value={formatInputValue(monthlyContribution)}
                        onChange={handleCurrencyChange(setMonthlyContribution)}
-                       className="block w-full pl-4 pr-12 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-medium"
+                       className="block w-full pl-4 pr-12 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-medium"
                      />
                      <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">₫</div>
                    </div>
@@ -571,7 +572,7 @@ const Simulator: React.FC = () => {
                     {/* Trigger Modal Button */}
                     <button 
                       onClick={() => setShowAddModal(true)}
-                      className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white py-2.5 rounded-lg text-sm font-bold hover:bg-emerald-700 transition-colors shadow-sm"
+                      className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white py-3.5 rounded-full text-sm font-bold hover:bg-emerald-700 transition-all shadow-md hover:shadow-lg hover:shadow-emerald-500/30 active:scale-95"
                     >
                       <Plus className="h-4 w-4" /> Thêm lệnh đầu tư
                     </button>
@@ -583,15 +584,15 @@ const Simulator: React.FC = () => {
              <div className="mt-6 pt-6 border-t border-slate-100 dark:border-slate-700">
                <label className="block text-sm font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
                   <CalendarRange className="h-4 w-4 text-emerald-600" />
-                  {t('homeV2.period')}
+                  {t('pages.dashboard.period')}
                </label>
                
-               <div className="bg-slate-100 dark:bg-slate-900 p-1 rounded-lg grid grid-cols-3 sm:flex">
+               <div className="bg-slate-100 dark:bg-slate-900 p-1 rounded-xl grid grid-cols-3 sm:flex">
                   {(['1Y', '2Y', '3Y', '5Y', 'YTD', 'CUSTOM'] as const).map(tf => (
                     <button
                       key={tf}
                       onClick={() => setTimeFrame(tf)}
-                      className={`sm:flex-1 py-1.5 px-2 text-xs font-bold rounded-md transition-all ${
+                      className={`sm:flex-1 py-1.5 px-2 text-xs font-bold rounded-lg transition-all ${
                         timeFrame === tf
                         ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-white shadow-sm'
                         : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
@@ -638,7 +639,7 @@ const Simulator: React.FC = () => {
           {/* 2. Fund Selection */}
           <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white">{t('simulator.selectFund')}</h2>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white">{t('pages.simulator.selectFund')}</h2>
                 <span className="text-xs bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded text-slate-500">{selectedFundIds.length}/3</span>
              </div>
              <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
@@ -648,7 +649,7 @@ const Simulator: React.FC = () => {
                    <div 
                       key={fund.id}
                       onClick={() => toggleFund(fund.id)}
-                      className={`flex items-center justify-between p-3 rounded-lg border cursor-pointer transition-all ${
+                      className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all ${
                         isSelected 
                         ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/20' 
                         : 'border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
@@ -684,7 +685,7 @@ const Simulator: React.FC = () => {
                <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
                   <div className="flex items-center gap-2 mb-1 text-slate-500 dark:text-slate-400">
                      <DollarSign className="h-4 w-4" />
-                     <span className="text-sm font-semibold uppercase tracking-wider">{t('simulator.totalInv')}</span>
+                     <span className="text-sm font-semibold uppercase tracking-wider">{t('pages.simulator.totalInv')}</span>
                   </div>
                   <div className="text-2xl font-bold text-slate-900 dark:text-white">
                     {formatVND(summaryResults[0].totalInvested)}
@@ -721,7 +722,7 @@ const Simulator: React.FC = () => {
 
           {/* Chart */}
           <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{t('simulator.chartTitle')} (Backtest)</h3>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">{t('pages.simulator.chartTitle')} (Backtest)</h3>
             <div className="h-[450px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
@@ -789,9 +790,9 @@ const Simulator: React.FC = () => {
                  <thead className="bg-white dark:bg-slate-800">
                    <tr>
                      <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Quỹ</th>
-                     <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">{t('simulator.totalInv')}</th>
+                     <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">{t('pages.simulator.totalInv')}</th>
                      <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Giá trị hiện tại</th>
-                     <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">{t('simulator.totalProfit')}</th>
+                     <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">{t('pages.simulator.totalProfit')}</th>
                      <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Tổng lãi (%)</th>
                      <th className="px-6 py-3 text-right text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider flex items-center justify-end gap-1">
                         XIRR
@@ -856,7 +857,7 @@ const Simulator: React.FC = () => {
                       type="date" 
                       value={newTxDate}
                       onChange={(e) => setNewTxDate(e.target.value)}
-                      className="w-full text-sm p-3 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500"
+                      className="w-full text-sm p-3 border border-slate-300 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500"
                    />
                 </div>
                 
@@ -867,7 +868,7 @@ const Simulator: React.FC = () => {
                         type="text" 
                         value={formatInputValue(newTxAmount)}
                         onChange={handleCurrencyChange(setNewTxAmount)}
-                        className="w-full text-lg font-bold p-3 pr-12 border border-slate-300 dark:border-slate-600 rounded-lg bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500"
+                        className="w-full text-lg font-bold p-3 pr-12 border border-slate-300 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500"
                      />
                      <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400 font-bold">₫</div>
                    </div>
@@ -877,13 +878,13 @@ const Simulator: React.FC = () => {
              <div className="mt-8 flex gap-3">
                 <button 
                   onClick={() => setShowAddModal(false)}
-                  className="flex-1 py-3 text-sm font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 rounded-lg hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                  className="flex-1 py-3 text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-all hover:shadow-md"
                 >
                   Hủy bỏ
                 </button>
                 <button 
                   onClick={handleAddTransaction}
-                  className="flex-1 py-3 text-sm font-bold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 shadow-md transition-all flex items-center justify-center gap-2"
+                  className="flex-1 py-3 text-sm font-bold text-white bg-emerald-600 rounded-full hover:bg-emerald-700 shadow-md transition-all hover:shadow-lg hover:shadow-emerald-500/30 active:scale-95 flex items-center justify-center gap-2"
                 >
                   <Check className="h-4 w-4" /> Xác nhận
                 </button>

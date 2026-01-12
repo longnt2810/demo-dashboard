@@ -127,21 +127,21 @@ const FireCalculator: React.FC = () => {
   };
 
   const chartGridColor = isDark ? '#334155' : '#e2e8f0';
-  const chartTextColor = isDark ? '#94a3b8' : '#94a3b8';
+  const chartTextColor = isDark ? '#94a3b8' : '#64748b';
   const chartTooltipBg = isDark ? '#1e293b' : '#fff';
   const chartTooltipBorder = isDark ? '#334155' : '#e2e8f0';
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <Link to="/tools" className="inline-flex items-center text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 mb-6 transition-colors">
-        <ArrowLeft className="h-4 w-4 mr-1" /> {t('common.tools')}
+        <ArrowLeft className="h-4 w-4 mr-1" /> {t('navigation.tools')}
       </Link>
 
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          {t('tools.fire.name')} <Flame className="h-8 w-8 text-orange-500" />
+          {t('pages.tools.fire.name')} <Flame className="h-8 w-8 text-orange-500" />
         </h1>
-        <p className="text-slate-500 dark:text-slate-400 mt-2">{t('tools.fire.desc')}</p>
+        <p className="text-slate-500 dark:text-slate-400 mt-2">{t('pages.tools.fire.desc')}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
@@ -150,13 +150,13 @@ const FireCalculator: React.FC = () => {
           <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
             <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
               <Calculator className="h-5 w-5 text-emerald-600" />
-              {t('tools.compound.params')}
+              {t('pages.tools.compound.params')}
             </h2>
 
             {/* Current Age */}
             <div className="mb-5">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                {t('tools.fire.currentAge')}
+                {t('pages.tools.fire.currentAge')}
               </label>
               <input
                 type="number"
@@ -169,7 +169,7 @@ const FireCalculator: React.FC = () => {
             {/* Net Worth */}
             <div className="mb-5">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                {t('tools.fire.netWorth')}
+                {t('pages.tools.fire.netWorth')}
               </label>
               <input
                 type="text"
@@ -182,7 +182,7 @@ const FireCalculator: React.FC = () => {
             {/* Income with Frequency */}
             <div className="mb-5">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                {t('tools.fire.income')}
+                {t('pages.tools.fire.income')}
               </label>
               <div className="flex rounded-md shadow-sm">
                 <input
@@ -205,7 +205,7 @@ const FireCalculator: React.FC = () => {
             {/* Expenses with Frequency */}
             <div className="mb-5">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                {t('tools.fire.expense')}
+                {t('pages.tools.fire.expense')}
               </label>
               <div className="flex rounded-md shadow-sm">
                 <input
@@ -231,7 +231,7 @@ const FireCalculator: React.FC = () => {
                <div className="grid grid-cols-2 gap-4">
                  <div>
                     <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
-                      {t('tools.fire.returns')}
+                      {t('pages.tools.fire.returns')}
                     </label>
                     <input
                       type="number"
@@ -243,7 +243,7 @@ const FireCalculator: React.FC = () => {
                  </div>
                  <div>
                     <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
-                      {t('tools.fire.inflation')}
+                      {t('pages.tools.fire.inflation')}
                     </label>
                     <input
                       type="number"
@@ -257,7 +257,7 @@ const FireCalculator: React.FC = () => {
                
                <div className="mt-4">
                   <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
-                    {t('tools.fire.swr')}
+                    {t('pages.tools.fire.swr')}
                   </label>
                   <input
                     type="number"
@@ -266,7 +266,7 @@ const FireCalculator: React.FC = () => {
                     onChange={(e) => setWithdrawalRate(Number(e.target.value))}
                     className="block w-full px-2 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
                   />
-                  <p className="text-[10px] text-slate-400 mt-1">{t('tools.fire.swrDesc')}</p>
+                  <p className="text-[10px] text-slate-400 mt-1">{t('pages.tools.fire.swrDesc')}</p>
                </div>
             </div>
 
@@ -282,9 +282,9 @@ const FireCalculator: React.FC = () => {
                 setInflationRate(4);
                 setWithdrawalRate(4);
               }}
-              className="w-full flex items-center justify-center py-2 mt-6 text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-emerald-200 dark:hover:border-emerald-900 bg-slate-50 dark:bg-slate-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all"
+              className="w-full flex items-center justify-center py-3 mt-6 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 bg-slate-100 hover:bg-rose-50 dark:bg-slate-800 dark:hover:bg-rose-900/20 rounded-full transition-all"
             >
-              <RefreshCcw className="h-3 w-3 mr-2" /> {t('tools.compound.reset')}
+              <RefreshCcw className="h-4 w-4 mr-2" /> {t('pages.tools.compound.reset')}
             </button>
           </div>
         </div>
@@ -297,86 +297,62 @@ const FireCalculator: React.FC = () => {
             <div className="bg-gradient-to-br from-orange-500 to-red-600 rounded-xl p-5 text-white shadow-lg">
                 <div className="flex items-center gap-2 mb-2 opacity-90">
                     <Flame className="h-5 w-5" />
-                    <span className="text-sm font-medium">{t('tools.fire.fireNumber')}</span>
+                    <span className="text-sm font-medium">{t('pages.tools.fire.fireNumber')}</span>
                 </div>
                 <div className="text-2xl font-bold tracking-tight">{formatShortVND(fireNumber)}</div>
                 <div className="text-xs mt-2 opacity-80">Mục tiêu tài chính cần đạt</div>
             </div>
 
             <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-                <div className="flex items-center gap-2 mb-2 text-slate-500 dark:text-slate-400">
-                    <CalendarCheck className="h-5 w-5" />
-                    <span className="text-sm font-medium">{t('tools.fire.yearsToFire')}</span>
+                <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1 flex items-center gap-2">
+                   <CalendarCheck className="h-4 w-4" />
+                   {t('pages.tools.fire.yearsToFire')}
                 </div>
-                <div className="flex items-baseline gap-2">
-                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{yearsToFire} {t('common.year')}</div>
-                    <div className="text-sm text-slate-500 dark:text-slate-400">({t('tools.fire.ageAtFire')}: {ageAtFire})</div>
+                <div className="text-xl font-bold text-slate-900 dark:text-white">{yearsToFire} {t('common.year')}</div>
+                <div className="text-xs text-slate-400 mt-2">
+                   Bạn sẽ đạt tự do tài chính ở tuổi {ageAtFire}.
                 </div>
             </div>
 
             <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-                <div className="flex items-center gap-2 mb-2 text-slate-500 dark:text-slate-400">
-                    <PiggyBank className="h-5 w-5" />
-                    <span className="text-sm font-medium">{t('tools.fire.savingsRate')}</span>
+                <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1 flex items-center gap-2">
+                   <PiggyBank className="h-4 w-4" />
+                   {t('pages.tools.fire.savingsRate')}
                 </div>
-                <div className={`text-2xl font-bold ${savingsRate >= 50 ? 'text-emerald-600 dark:text-emerald-400' : savingsRate >= 20 ? 'text-blue-600 dark:text-blue-400' : 'text-amber-600'}`}>
-                    {savingsRate.toFixed(1)}%
-                </div>
-                <div className="text-xs mt-2 text-slate-400">
-                    {savingsRate >= 50 ? 'Xuất sắc!' : savingsRate >= 20 ? 'Khá tốt' : 'Cần cố gắng'}
+                <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400">{savingsRate.toFixed(1)}%</div>
+                <div className="text-xs text-slate-400 mt-2">
+                   Tỷ lệ tiết kiệm hiện tại.
                 </div>
             </div>
           </div>
 
-          {/* Alert if logic is weird */}
-          {savingsRate <= 0 && (
-             <div className="bg-rose-50 dark:bg-rose-900/20 p-4 rounded-lg border border-rose-100 dark:border-rose-900/50 flex gap-3">
-               <AlertTriangle className="h-5 w-5 text-rose-600 dark:text-rose-500 flex-shrink-0" />
-               <p className="text-sm text-rose-800 dark:text-rose-200 leading-relaxed">
-                 Bạn đang tiêu nhiều hơn hoặc bằng số tiền kiếm được. Không thể đạt FIRE nếu không có tiền tiết kiệm để đầu tư.
-               </p>
-             </div>
-          )}
-
           {/* Chart */}
-          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-emerald-600" />
-              {t('tools.compound.chart')} (Theo sức mua hiện tại)
-            </h3>
-            <div className="h-[400px]">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 h-full max-h-[450px]">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                <TrendingUp className="h-5 w-5 text-emerald-600" />
+                Lộ trình tăng trưởng tài sản
+              </h3>
+            </div>
+            <div className="h-[350px]">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={data} margin={{ top: 20, right: 30, left: 10, bottom: 10 }}>
+                <LineChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartGridColor} />
-                  <XAxis 
-                    dataKey="age" 
-                    type="number" 
-                    domain={['dataMin', 'dataMax']} 
-                    stroke={chartTextColor} 
-                    tick={{fontSize: 12}} 
-                    tickLine={false} 
-                    axisLine={false}
-                    label={{ value: 'Tuổi', position: 'insideBottomRight', offset: -5, fill: chartTextColor }}
-                  />
+                  <XAxis dataKey="age" stroke={chartTextColor} tick={{fontSize: 12}} tickLine={false} axisLine={false} label={{ value: 'Tuổi', position: 'insideBottom', offset: -5, fill: chartTextColor, fontSize: 10 }} />
                   <YAxis stroke={chartTextColor} tick={{fontSize: 12}} tickLine={false} axisLine={false} tickFormatter={formatShortVND} />
-                  <Tooltip
+                  <Tooltip 
                     formatter={(value: number) => formatShortVND(value)}
-                    labelFormatter={(v) => `Tuổi: ${v}`}
                     contentStyle={{ backgroundColor: chartTooltipBg, borderRadius: '8px', border: `1px solid ${chartTooltipBorder}`, color: chartTextColor }}
                     itemStyle={{ color: chartTextColor }}
                   />
                   <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
-                  <ReferenceLine y={fireNumber} label="Mục tiêu FIRE" stroke="orange" strokeDasharray="3 3" />
-                  <Line type="monotone" dataKey="netWorth" name={t('tools.fire.chartWorth')} stroke="#059669" strokeWidth={3} dot={false} />
-                  <Line type="monotone" dataKey="fireTarget" name={t('tools.fire.chartTarget')} stroke="#f97316" strokeWidth={2} strokeDasharray="5 5" dot={false} />
+                  <ReferenceLine y={fireNumber} label="Mục tiêu FIRE" stroke="red" strokeDasharray="3 3" />
+                  <Line type="monotone" dataKey="netWorth" name={t('pages.tools.fire.chartWorth')} stroke="#059669" strokeWidth={3} dot={false} />
+                  <Line type="monotone" dataKey="fireTarget" name={t('pages.tools.fire.chartTarget')} stroke="#f97316" strokeWidth={2} strokeDasharray="5 5" dot={false} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
-            <p className="text-xs text-slate-400 mt-4 text-center">
-              *Biểu đồ sử dụng Lãi suất thực (Lãi suất danh nghĩa - Lạm phát) để hiển thị giá trị tương đương với sức mua ngày nay.
-            </p>
           </div>
-
         </div>
       </div>
     </div>

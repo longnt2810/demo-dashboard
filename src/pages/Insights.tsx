@@ -11,8 +11,8 @@ const Insights: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="mb-10">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t('pages.insights.title')}</h1>
-        <p className="text-slate-500 dark:text-slate-400 mt-2">{t('pages.insights.subtitle')}</p>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t('insights.title')}</h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-2">{t('insights.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -41,7 +41,7 @@ const Insights: React.FC = () => {
                 {article.summary}
               </p>
               <button className="text-emerald-600 dark:text-emerald-400 font-semibold text-sm flex items-center group-hover:text-emerald-700 dark:group-hover:text-emerald-300 mt-auto self-start">
-                {t('pages.insights.read')} <ChevronRight className="h-4 w-4 ml-0.5" />
+                {t('insights.read')} <ChevronRight className="h-4 w-4 ml-0.5" />
               </button>
             </div>
           </article>

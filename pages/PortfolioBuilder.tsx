@@ -171,10 +171,10 @@ const PortfolioBuilder: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white flex items-center gap-3">
-            {t('portfolio.title')}
+            {t('pages.portfolio.title')}
             <Briefcase className="h-8 w-8 text-emerald-600" />
         </h1>
-        <p className="text-slate-500 dark:text-slate-400 mt-2">{t('portfolio.subtitle')}</p>
+        <p className="text-slate-500 dark:text-slate-400 mt-2">{t('pages.portfolio.subtitle')}</p>
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
@@ -182,7 +182,7 @@ const PortfolioBuilder: React.FC = () => {
         {/* --- COLUMN 1 & 2: ASSET SELECTION & WEIGHTS --- */}
         <div className="xl:col-span-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
             <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t('portfolio.assets')}</h3>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t('pages.portfolio.assets')}</h3>
                 <div className="flex items-center gap-3">
                     <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Tổng tỷ trọng:</span>
                     <span className={`text-sm font-bold px-3 py-1 rounded-full ${isValid ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400'}`}>
@@ -198,7 +198,7 @@ const PortfolioBuilder: React.FC = () => {
                         onChange={handleAddFund}
                         className="w-full appearance-none bg-slate-50 dark:bg-slate-700 border border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white py-3 pl-4 pr-10 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 text-sm font-medium"
                     >
-                        <option value="">+ {t('portfolio.add')}</option>
+                        <option value="">+ {t('pages.portfolio.add')}</option>
                         {MOCK_FUNDS.filter(f => !assets.find(a => a.id === f.id)).map(fund => (
                             <option key={fund.id} value={fund.id}>
                                 {fund.code} - {fund.name} ({fund.type})
@@ -260,7 +260,7 @@ const PortfolioBuilder: React.FC = () => {
 
         {/* --- COLUMN 3: PIE CHART --- */}
         <div className="xl:col-span-1 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 flex flex-col items-center justify-center min-h-[300px]">
-            <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">{t('portfolio.allocation')}</h3>
+            <h3 className="text-sm font-bold text-slate-500 dark:text-slate-400 mb-2 uppercase tracking-wider">{t('pages.portfolio.allocation')}</h3>
             <div className="h-[200px] w-full relative">
                 <ResponsiveContainer width="100%" height="100%">
                     <RechartsPie>
@@ -308,12 +308,12 @@ const PortfolioBuilder: React.FC = () => {
             {!isValid ? (
                 <div className="h-full flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-800/50 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 text-slate-400 p-6 text-center">
                     <AlertTriangle className="h-10 w-10 mb-3 opacity-50" />
-                    <p className="font-medium text-sm">{t('portfolio.warningWeight')}</p>
+                    <p className="font-medium text-sm">{t('pages.portfolio.warningWeight')}</p>
                 </div>
             ) : backtestData ? (
                 <>
                     <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col justify-between h-[32%]">
-                        <div className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">{t('portfolio.metrics.return')}</div>
+                        <div className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">{t('pages.portfolio.metrics.return')}</div>
                         <div className="flex items-center justify-between">
                             <span className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">
                                 {backtestData.metrics.cagr.toFixed(1)}%
@@ -326,7 +326,7 @@ const PortfolioBuilder: React.FC = () => {
                     </div>
 
                     <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col justify-between h-[32%]">
-                        <div className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">{t('portfolio.metrics.risk')}</div>
+                        <div className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">{t('pages.portfolio.metrics.risk')}</div>
                         <div className="flex items-center justify-between">
                             <span className="text-3xl font-bold text-rose-600 dark:text-rose-400">
                                 {backtestData.metrics.volatility.toFixed(1)}%
@@ -339,7 +339,7 @@ const PortfolioBuilder: React.FC = () => {
                     </div>
 
                     <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 flex flex-col justify-between h-[32%]">
-                        <div className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">{t('portfolio.metrics.ratio')}</div>
+                        <div className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">{t('pages.portfolio.metrics.ratio')}</div>
                         <div className="flex items-center justify-between">
                             <span className="text-3xl font-bold text-blue-600 dark:text-blue-400">
                                 {backtestData.metrics.sharpe.toFixed(2)}
@@ -361,10 +361,10 @@ const PortfolioBuilder: React.FC = () => {
                 {/* Main Chart */}
                 <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
                     <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t('portfolio.growthChart')}</h3>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t('pages.portfolio.growthChart')}</h3>
                         <div className="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-3 py-1.5 rounded-full">
                             <RefreshCw className="h-3 w-3" />
-                            {t('portfolio.rebalance')}
+                            {t('pages.portfolio.rebalance')}
                         </div>
                     </div>
                     
@@ -426,7 +426,7 @@ const PortfolioBuilder: React.FC = () => {
                 <div className="bg-indigo-50 dark:bg-indigo-900/20 p-6 rounded-xl border border-indigo-100 dark:border-indigo-900/50 flex gap-4">
                     <Info className="h-6 w-6 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-1" />
                     <div>
-                        <h4 className="font-bold text-indigo-900 dark:text-indigo-100 mb-2">{t('portfolio.riskReduction')}</h4>
+                        <h4 className="font-bold text-indigo-900 dark:text-indigo-100 mb-2">{t('pages.portfolio.riskReduction')}</h4>
                         <p className="text-sm text-indigo-800 dark:text-indigo-200 leading-relaxed">
                             Bằng cách kết hợp các tài sản có độ tương quan thấp (như Cổ phiếu và Trái phiếu), bạn có thể giảm độ biến động tổng thể của danh mục thấp hơn mức trung bình của từng tài sản riêng lẻ. Đây là "bữa trưa miễn phí" duy nhất trong tài chính.
                         </p>

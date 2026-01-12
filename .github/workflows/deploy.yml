@@ -1,58 +1,50 @@
 name: Deploy to GitHub Pages
 
 on:
-  # Trigger on push to main branch
+  # Kích hoạt khi push vào nhánh main
   push:
     branches: ["main"]
 
-  # Allow manual workflow dispatch from Actions tab
+  # Cho phép chạy thủ công từ tab Actions
   workflow_dispatch:
 
-# Grant GITHUB_TOKEN permissions for deployment
+# Cấp quyền GITHUB_TOKEN để deploy
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment
+# Chỉ cho phép một lần deploy chạy tại một thời điểm
 concurrency:
   group: "pages"
   cancel-in-progress: false
 
 jobs:
-  # Build Job
+  # Job Build
   build:
     runs-on: ubuntu-latest
-    env:
-      # Set base path for GitHub Pages (repository name)
-      VITE_BASE_PATH: /demo-dashboard/
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: "npm"
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
-      - name: Build Vite project
+      - name: Build project
         run: npm run build
-        env:
-          NODE_ENV: production
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload build artifact
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
 
-  # Deploy Job
+  # Job Deploy
   deploy:
     environment:
       name: github-pages

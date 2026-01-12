@@ -88,29 +88,29 @@ const HomeV2: React.FC = () => {
   // 4. Featured Tools
   const featuredTools = [
     {
-      title: t('navigation.simulator'),
-      desc: t('pages.simulator.subtitle'),
+      title: t('common.simulator'),
+      desc: t('simulator.subtitle'),
       icon: <TrendingUp className="h-6 w-6 text-white" />,
       path: '/simulator',
       color: 'bg-blue-600'
     },
     {
-      title: t('pages.tools.compound.name'),
-      desc: t('pages.tools.compound.desc'),
+      title: t('tools.compound.name'),
+      desc: t('tools.compound.desc'),
       icon: <Calculator className="h-6 w-6 text-white" />,
       path: '/tools/compound-interest',
       color: 'bg-emerald-600'
     },
     {
-      title: t('pages.tools.goal.name'),
-      desc: t('pages.tools.goal.desc'),
+      title: t('tools.goal.name'),
+      desc: t('tools.goal.desc'),
       icon: <Target className="h-6 w-6 text-white" />,
       path: '/tools/financial-goal-planner',
       color: 'bg-purple-600'
     },
     {
-      title: t('pages.tools.inflation.name'),
-      desc: t('pages.tools.inflation.desc'),
+      title: t('tools.inflation.name'),
+      desc: t('tools.inflation.desc'),
       icon: <TrendingDown className="h-6 w-6 text-white" />,
       path: '/tools/inflation-calculator',
       color: 'bg-rose-600'
@@ -157,7 +157,7 @@ const HomeV2: React.FC = () => {
 
           {/* Main Title */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-6 leading-tight">
-            {t('pages.home.heroTitle')} <br className="hidden md:block"/>
+            {t('homePage.heroTitle')} <br className="hidden md:block"/>
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-500 dark:from-emerald-400 dark:to-teal-300 relative">
               Thị trường Việt Nam
               <svg className="absolute w-full h-3 -bottom-1 left-0 text-emerald-200 dark:text-emerald-900/50 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none">
@@ -168,7 +168,7 @@ const HomeV2: React.FC = () => {
 
           {/* Subtitle */}
           <p className="text-lg md:text-xl text-slate-500 dark:text-slate-400 max-w-2xl mx-auto mb-10 leading-relaxed">
-            {t('pages.home.heroSubtitle')}
+            {t('homePage.heroSubtitle')}
           </p>
 
           {/* Action Buttons */}
@@ -178,7 +178,7 @@ const HomeV2: React.FC = () => {
               className="group relative inline-flex items-center justify-center px-8 py-3.5 text-base font-bold text-white bg-emerald-600 rounded-full overflow-hidden transition-all hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-500/30"
             >
               <span className="relative z-10 flex items-center">
-                {t('pages.home.simulateBtn')}
+                {t('homePage.simulateBtn')}
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </span>
             </Link>
@@ -187,7 +187,7 @@ const HomeV2: React.FC = () => {
               to="/funds"
               className="inline-flex items-center justify-center px-8 py-3.5 text-base font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full hover:bg-slate-50 dark:hover:bg-slate-700 transition-all hover:shadow-md"
             >
-              {t('pages.home.viewFundsBtn')}
+              {t('homePage.viewFundsBtn')}
             </Link>
           </div>
 
@@ -216,10 +216,10 @@ const HomeV2: React.FC = () => {
                          <div className="bg-emerald-100 dark:bg-emerald-900/30 p-2 rounded-lg">
                              <LayoutDashboard className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
                          </div>
-                         <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t('pages.dashboard.title')}</h2>
+                         <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t('homeV2.title')}</h2>
                     </div>
                     <p className="text-slate-500 dark:text-slate-400 max-w-lg">
-                        {t('pages.dashboard.subtitle')}
+                        {t('homeV2.subtitle')}
                     </p>
                 </div>
 
@@ -259,7 +259,7 @@ const HomeV2: React.FC = () => {
                     <div className="flex justify-between items-center mb-6">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                             <Trophy className="h-5 w-5 text-yellow-500" />
-                            {t('pages.dashboard.topFunds')}
+                            {t('homeV2.topFunds')}
                         </h3>
                         <span className="text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">{period}</span>
                     </div>
@@ -307,11 +307,11 @@ const HomeV2: React.FC = () => {
                     <div className="flex justify-between items-center mb-2">
                         <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                             <Activity className="h-5 w-5 text-rose-500" />
-                            {t('pages.dashboard.riskTitle')}
+                            {t('homeV2.riskTitle')}
                         </h3>
                         <span className="text-xs font-bold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md">{period}</span>
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">{t('pages.dashboard.riskDesc')}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">{t('homeV2.riskDesc')}</p>
                     
                     <div className="h-[220px] relative">
                          {/* Quadrant Helper */}
@@ -441,7 +441,7 @@ const HomeV2: React.FC = () => {
                          <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
                              <Wrench className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                          </div>
-                         <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t('navigation.tools')}</h2>
+                         <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t('common.tools')}</h2>
                     </div>
                     <p className="text-slate-500 dark:text-slate-400">
                         Các công cụ hỗ trợ tính toán tài chính cá nhân.

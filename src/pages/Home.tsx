@@ -1,4 +1,3 @@
-
 import React, { useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowUpRight, TrendingUp, ShieldCheck, PieChart, Info, ArrowRight, Calculator, Target, Landmark, TrendingDown } from 'lucide-react';

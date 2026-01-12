@@ -33,120 +33,134 @@ const LoanRepaymentSchedule: React.FC = () => {
   const [method, setMethod] = useState<CalculationMethod>('Reducing');
 
   // Results
-  const [schedule, setSchedule] = useState<AmortizationRow[]>([]);
-  const [totalInterest, setTotalInterest] = useState<number>(0);
-  const [totalPayment, setTotalPayment] = useState<number>(0);
-
-  // Pagination
+  const [data, setData] = useState<AmortizationRow[]>([]);
+  const [summary, setSummary] = useState({
+    totalPrincipal: 0,
+    totalInterest: 0,
+    totalPayment: 0,
+    monthlyPayment: 0 // For flat, or first month for reducing
+  });
+  
+  // Pagination State
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 12; // Show 1 year per page usually
+  const itemsPerPage = 12; // 1 year per page
 
   // Refs
   const chartRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    calculateLoan();
+    calculate();
     setCurrentPage(1);
   }, [loanAmount, interestRate, durationYears, startDate, method]);
 
-  const calculateLoan = () => {
+  const calculate = () => {
     const rows: AmortizationRow[] = [];
-    const months = durationYears * 12;
+    const totalMonths = durationYears * 12;
     const monthlyRate = (interestRate / 100) / 12;
     
-    let balance = loanAmount;
-    let accumulatedInterest = 0;
-    let accumulatedPayment = 0;
+    let currentBalance = loanAmount;
+    let totalPrincipalPaid = 0;
+    let totalInterestPaid = 0;
     
-    // Tracking cumulative variables for chart
-    let runningAccPrincipal = 0;
-    let runningAccInterest = 0;
+    // Start Date Object
+    const startObj = new Date(startDate);
 
-    let disbursementDate = new Date(startDate);
-
-    // Calculate fixed Monthly Payment for Reducing Balance (Annuity Formula)
-    let fixedMonthlyPayment = 0;
     if (method === 'Reducing') {
-       if (monthlyRate === 0) {
-         fixedMonthlyPayment = loanAmount / months;
-       } else {
-         fixedMonthlyPayment = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, months)) / (Math.pow(1 + monthlyRate, months) - 1);
-       }
-    } else {
-       const monthlyPrincipal = loanAmount / months;
-       const fixedInterest = loanAmount * monthlyRate;
-       fixedMonthlyPayment = monthlyPrincipal + fixedInterest;
-    }
+        // EMI Calculation: P * r * (1+r)^n / ((1+r)^n - 1)
+        const emi = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, totalMonths)) / (Math.pow(1 + monthlyRate, totalMonths) - 1);
+        
+        for (let i = 1; i <= totalMonths; i++) {
+            const interest = currentBalance * monthlyRate;
+            const principal = emi - interest;
+            const endingBalance = Math.max(0, currentBalance - principal);
+            
+            // Adjust last month
+            let finalPrincipal = principal;
+            let finalPayment = emi;
+            let finalEndingBalance = endingBalance;
 
-    // Add initial state (Month 0) for cleaner chart
-    rows.push({
-      month: 0,
-      date: disbursementDate.toLocaleDateString('vi-VN'),
-      beginningBalance: loanAmount,
-      principalPaid: 0,
-      interestPaid: 0,
-      accPrincipal: 0,
-      accInterest: 0,
-      totalPayment: 0,
-      endingBalance: loanAmount
-    });
+            if (i === totalMonths && endingBalance > 0) {
+               // Due to rounding, ensure balance is 0
+               finalPrincipal = currentBalance;
+               finalPayment = finalPrincipal + interest;
+               finalEndingBalance = 0;
+            } else if (i === totalMonths && endingBalance < 0) {
+                finalPrincipal = currentBalance;
+                finalPayment = finalPrincipal + interest;
+                finalEndingBalance = 0;
+            }
 
-    for (let i = 1; i <= months; i++) {
-      let interest = 0;
-      let principal = 0;
-      let payment = 0;
+            totalPrincipalPaid += finalPrincipal;
+            totalInterestPaid += interest;
 
-      // Handle Dates
-      const currentDate = new Date(disbursementDate);
-      currentDate.setMonth(disbursementDate.getMonth() + i);
-      const dateString = currentDate.toLocaleDateString('vi-VN');
+            const date = new Date(startObj);
+            date.setMonth(startObj.getMonth() + i);
 
-      if (method === 'Reducing') {
-        interest = balance * monthlyRate;
-        payment = fixedMonthlyPayment;
-        if (i === months) {
-           payment = balance + interest;
+            rows.push({
+                month: i,
+                date: date.toLocaleDateString('vi-VN', { month: '2-digit', year: 'numeric' }),
+                beginningBalance: Math.round(currentBalance),
+                principalPaid: Math.round(finalPrincipal),
+                interestPaid: Math.round(interest),
+                accPrincipal: Math.round(totalPrincipalPaid),
+                accInterest: Math.round(totalInterestPaid),
+                totalPayment: Math.round(finalPayment),
+                endingBalance: Math.round(finalEndingBalance)
+            });
+
+            currentBalance = finalEndingBalance;
         }
-        principal = payment - interest;
-      } else {
-        interest = loanAmount * monthlyRate;
-        principal = loanAmount / months;
-        payment = principal + interest;
-      }
+        
+        setSummary({
+            totalPrincipal: loanAmount,
+            totalInterest: totalInterestPaid,
+            totalPayment: loanAmount + totalInterestPaid,
+            monthlyPayment: emi
+        });
 
-      if (balance - principal < 0) principal = balance;
-      
-      const beginningBalance = balance;
-      balance -= principal;
-      if (balance < 0) balance = 0;
+    } else {
+        // Flat Rate
+        // Total Interest = P * r * t (where t is years)
+        // Monthly Payment = (P + Total Interest) / months
+        const totalInterest = loanAmount * (interestRate / 100) * durationYears;
+        const monthlyPayment = (loanAmount + totalInterest) / totalMonths;
+        const monthlyPrincipal = loanAmount / totalMonths;
+        const monthlyInterest = totalInterest / totalMonths;
 
-      accumulatedInterest += interest;
-      accumulatedPayment += payment;
-      
-      // Update running totals
-      runningAccPrincipal += principal;
-      runningAccInterest += interest;
+        for (let i = 1; i <= totalMonths; i++) {
+            totalPrincipalPaid += monthlyPrincipal;
+            totalInterestPaid += monthlyInterest;
+            const endingBalance = Math.max(0, loanAmount - totalPrincipalPaid);
 
-      rows.push({
-        month: i,
-        date: dateString,
-        beginningBalance: Math.round(beginningBalance),
-        principalPaid: Math.round(principal),
-        interestPaid: Math.round(interest),
-        accPrincipal: Math.round(runningAccPrincipal),
-        accInterest: Math.round(runningAccInterest),
-        totalPayment: Math.round(payment),
-        endingBalance: Math.round(balance)
-      });
+            const date = new Date(startObj);
+            date.setMonth(startObj.getMonth() + i);
+
+            rows.push({
+                month: i,
+                date: date.toLocaleDateString('vi-VN', { month: '2-digit', year: 'numeric' }),
+                beginningBalance: Math.round(loanAmount - (monthlyPrincipal * (i-1))),
+                principalPaid: Math.round(monthlyPrincipal),
+                interestPaid: Math.round(monthlyInterest),
+                accPrincipal: Math.round(totalPrincipalPaid),
+                accInterest: Math.round(totalInterestPaid),
+                totalPayment: Math.round(monthlyPayment),
+                endingBalance: Math.round(endingBalance)
+            });
+        }
+
+        setSummary({
+            totalPrincipal: loanAmount,
+            totalInterest: totalInterest,
+            totalPayment: loanAmount + totalInterest,
+            monthlyPayment: monthlyPayment
+        });
     }
 
-    setSchedule(rows);
-    setTotalInterest(accumulatedInterest);
-    setTotalPayment(accumulatedPayment);
+    setData(rows);
   };
 
   const formatVND = (num: number) => {
-    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(num);
+    return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(num);
   };
 
   const formatShortVND = (num: number) => {
@@ -171,7 +185,7 @@ const LoanRepaymentSchedule: React.FC = () => {
         const image = canvas.toDataURL("image/png");
         const link = document.createElement("a");
         link.href = image;
-        link.download = "loan_repayment_chart.png";
+        link.download = "loan_schedule_chart.png";
         link.click();
       } catch (err) {
         console.error("Failed to export image", err);
@@ -187,20 +201,21 @@ const LoanRepaymentSchedule: React.FC = () => {
       [],
       ["--- Parameters ---"],
       ["Loan Amount", loanAmount],
-      ["Interest Rate (%/Year)", interestRate],
-      ["Term (Years)", durationYears],
+      ["Annual Interest Rate (%)", interestRate],
+      ["Duration (Years)", durationYears],
       ["Start Date", startDate],
-      ["Method", method === 'Reducing' ? 'Reducing Balance (Dư nợ giảm dần)' : 'Flat Rate (Trên dư nợ gốc)'],
+      ["Calculation Method", method === 'Reducing' ? 'Reducing Balance' : 'Flat Rate'],
       [],
       ["--- Summary ---"],
-      ["Total Payment", totalPayment],
-      ["Total Interest", totalInterest],
+      ["Total Payment", summary.totalPayment],
+      ["Total Interest", summary.totalInterest],
+      ["Est. Monthly Payment", summary.monthlyPayment],
       [],
       ["--- Schedule ---"],
       ["Month", "Date", "Beginning Balance", "Principal", "Interest", "Total Payment", "Ending Balance"]
     ];
 
-    const tableData = schedule.slice(1).map(row => [ // Skip month 0 for excel
+    const tableData = data.map(row => [
       row.month,
       row.date,
       row.beginningBalance,
@@ -212,12 +227,12 @@ const LoanRepaymentSchedule: React.FC = () => {
 
     const wsData = [...inputInfo, ...tableData];
     const ws = XLSX.utils.aoa_to_sheet(wsData);
-    XLSX.utils.book_append_sheet(wb, ws, "Loan Schedule");
-    XLSX.writeFile(wb, "loan_schedule.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, "Schedule");
+    XLSX.writeFile(wb, "loan_repayment_schedule.xlsx");
   };
 
-  const totalPages = Math.ceil((schedule.length - 1) / itemsPerPage); // Subtract 1 for month 0
-  const paginatedData = schedule.slice(1).slice( // Skip month 0 for table display
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  const paginatedData = data.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -229,13 +244,13 @@ const LoanRepaymentSchedule: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-       <Link to="/tools" className="inline-flex items-center text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 mb-6 transition-colors">
-        <ArrowLeft className="h-4 w-4 mr-1" /> {t('common.tools')}
+      <Link to="/tools" className="inline-flex items-center text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 mb-6 transition-colors">
+        <ArrowLeft className="h-4 w-4 mr-1" /> {t('navigation.tools')}
       </Link>
 
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t('tools.loan.name')}</h1>
-        <p className="text-slate-500 dark:text-slate-400 mt-2">{t('tools.loan.desc')}</p>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">{t('pages.tools.loan.name')}</h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-2">{t('pages.tools.loan.desc')}</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-8">
@@ -245,13 +260,13 @@ const LoanRepaymentSchedule: React.FC = () => {
           <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
             <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
               <Landmark className="h-5 w-5 text-emerald-600" />
-              {t('tools.compound.params')}
+              {t('pages.tools.compound.params')}
             </h2>
 
             {/* Loan Amount */}
             <div className="mb-5">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                {t('tools.loan.amount')}
+                {t('pages.tools.loan.amount')}
               </label>
               <div className="relative rounded-md shadow-sm">
                  <input
@@ -266,7 +281,7 @@ const LoanRepaymentSchedule: React.FC = () => {
             {/* Interest Rate */}
             <div className="mb-5">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                {t('tools.loan.rate')}
+                {t('pages.tools.loan.rate')}
               </label>
               <input
                 type="number"
@@ -282,7 +297,7 @@ const LoanRepaymentSchedule: React.FC = () => {
             {/* Duration */}
             <div className="mb-5">
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                {t('tools.loan.term')}: {durationYears} {t('common.year')}
+                {t('pages.tools.loan.term')}: {durationYears} {t('common.year')}
               </label>
               <input
                 type="range"
@@ -298,55 +313,43 @@ const LoanRepaymentSchedule: React.FC = () => {
               </div>
             </div>
 
-             {/* Start Date */}
-             <div className="mb-5">
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                {t('tools.loan.start')}
-              </label>
-              <div className="relative">
-                <input
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="block w-full pl-3 pr-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
-                />
-                <CalendarIcon className="absolute right-3 top-3 h-5 w-5 text-slate-400 pointer-events-none" />
-              </div>
+            {/* Start Date */}
+            <div className="mb-5">
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    {t('pages.tools.loan.start')}
+                </label>
+                <div className="relative">
+                    <input 
+                        type="date" 
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                        className="block w-full pl-10 pr-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                    />
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <CalendarIcon className="h-5 w-5 text-slate-400" />
+                    </div>
+                </div>
             </div>
 
-            {/* Calculation Method */}
+            {/* Method */}
             <div className="mb-5">
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
-                {t('tools.loan.method')}
-              </label>
-              <div className="space-y-2">
-                <label className="flex items-center p-3 border border-slate-200 dark:border-slate-600 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                  <input
-                    type="radio"
-                    name="method"
-                    value="Reducing"
-                    checked={method === 'Reducing'}
-                    onChange={() => setMethod('Reducing')}
-                    className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300"
-                  />
-                  <div className="ml-3">
-                    <span className="block text-sm font-medium text-slate-900 dark:text-white">{t('tools.loan.reducing')}</span>
-                  </div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                    {t('pages.tools.loan.method')}
                 </label>
-                <label className="flex items-center p-3 border border-slate-200 dark:border-slate-600 rounded-lg cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
-                  <input
-                    type="radio"
-                    name="method"
-                    value="Flat"
-                    checked={method === 'Flat'}
-                    onChange={() => setMethod('Flat')}
-                    className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300"
-                  />
-                  <div className="ml-3">
-                    <span className="block text-sm font-medium text-slate-900 dark:text-white">{t('tools.loan.flat')}</span>
-                  </div>
-                </label>
-              </div>
+                <div className="grid grid-cols-2 gap-2">
+                    <button 
+                        onClick={() => setMethod('Reducing')}
+                        className={`py-2 px-3 text-sm rounded-lg border transition-all ${method === 'Reducing' ? 'bg-emerald-50 border-emerald-500 text-emerald-700 font-medium dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300'}`}
+                    >
+                        {t('pages.tools.loan.reducing')}
+                    </button>
+                    <button 
+                        onClick={() => setMethod('Flat')}
+                        className={`py-2 px-3 text-sm rounded-lg border transition-all ${method === 'Flat' ? 'bg-emerald-50 border-emerald-500 text-emerald-700 font-medium dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300'}`}
+                    >
+                        {t('pages.tools.loan.flat')}
+                    </button>
+                </div>
             </div>
 
             <button 
@@ -354,12 +357,12 @@ const LoanRepaymentSchedule: React.FC = () => {
                 setLoanAmount(1000000000);
                 setInterestRate(10.5);
                 setDurationYears(5);
-                setMethod('Reducing');
                 setStartDate(new Date().toISOString().slice(0, 10));
+                setMethod('Reducing');
               }}
-              className="w-full flex items-center justify-center py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 border border-slate-200 dark:border-slate-700 rounded-lg hover:border-emerald-200 dark:hover:border-emerald-900 bg-slate-50 dark:bg-slate-700 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-all"
+              className="w-full flex items-center justify-center py-3 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 bg-slate-100 hover:bg-rose-50 dark:bg-slate-800 dark:hover:bg-rose-900/20 rounded-full transition-all"
             >
-              <RefreshCcw className="h-3 w-3 mr-2" /> {t('tools.compound.reset')}
+              <RefreshCcw className="h-4 w-4 mr-2" /> {t('pages.tools.compound.reset')}
             </button>
           </div>
         </div>
@@ -367,45 +370,48 @@ const LoanRepaymentSchedule: React.FC = () => {
         {/* Right Column: Summary & Chart */}
         <div className="lg:col-span-8 space-y-6">
           
-           {/* Summary Cards */}
+          {/* Summary Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-             <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-               <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">{t('tools.loan.totalPay')}</div>
-               <div className="text-2xl font-bold text-slate-900 dark:text-white">{formatShortVND(totalPayment)}</div>
-             </div>
-             <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-               <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">{t('tools.loan.totalInt')}</div>
-               <div className="text-xl font-bold text-rose-600">{formatShortVND(totalInterest)}</div>
-             </div>
-             <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-               <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">{t('tools.loan.estMonthly')}</div>
-               <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
-                 {schedule.length > 1 ? formatShortVND(schedule[1].totalPayment) : 0}
+             <div className="bg-emerald-600 text-white p-5 rounded-xl shadow-md">
+               <div className="text-emerald-100 text-sm font-medium mb-1">{t('pages.tools.loan.estMonthly')}</div>
+               <div className="text-2xl font-bold tracking-tight">{formatVND(summary.monthlyPayment)}</div>
+               <div className="text-xs text-emerald-100 mt-2 opacity-80">
+                 {method === 'Reducing' ? 'Tháng đầu tiên (giảm dần)' : 'Cố định hàng tháng'}
                </div>
+             </div>
+             
+             <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+               <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">{t('pages.tools.loan.totalPay')}</div>
+               <div className="text-xl font-bold text-slate-900 dark:text-white">{formatShortVND(summary.totalPayment)}</div>
+             </div>
+
+             <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+               <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">{t('pages.tools.loan.totalInt')}</div>
+               <div className="text-xl font-bold text-rose-600 dark:text-rose-400">{formatShortVND(summary.totalInterest)}</div>
              </div>
           </div>
 
-          {/* Chart */}
+          {/* Area Chart */}
           <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 h-full max-h-[450px]">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <Wallet className="h-5 w-5 text-emerald-600" />
-                {t('tools.compound.chart')}
+                {t('pages.tools.compound.chart')}
               </h3>
               <button 
                 onClick={handleExportImage}
-                className="text-xs flex items-center gap-1 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700"
+                className="group flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:text-emerald-600 rounded-full shadow-sm hover:shadow-md transition-all text-sm font-bold"
               >
-                <ImageIcon className="h-4 w-4" /> {t('tools.compound.saveGraph')}
+                <ImageIcon className="h-4 w-4" /> {t('pages.tools.compound.saveGraph')}
               </button>
             </div>
             <div className="h-[350px]" ref={chartRef}>
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={schedule} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                   <defs>
-                    <linearGradient id="colorPrincipal" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.8}/>
-                      <stop offset="95%" stopColor="#94a3b8" stopOpacity={0.1}/>
+                    <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#059669" stopOpacity={0.8}/>
+                      <stop offset="95%" stopColor="#059669" stopOpacity={0.1}/>
                     </linearGradient>
                     <linearGradient id="colorInterest" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#e11d48" stopOpacity={0.8}/>
@@ -413,7 +419,7 @@ const LoanRepaymentSchedule: React.FC = () => {
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartGridColor} />
-                  <XAxis dataKey="month" stroke={chartTextColor} tick={{fontSize: 12}} tickLine={false} axisLine={false} interval={11} label={{ value: t('common.month'), position: 'insideBottomRight', offset: -5 }} />
+                  <XAxis dataKey="month" stroke={chartTextColor} tick={{fontSize: 12}} tickLine={false} axisLine={false} tickFormatter={(val) => `Tháng ${val}`} minTickGap={30} />
                   <YAxis stroke={chartTextColor} tick={{fontSize: 12}} tickLine={false} axisLine={false} tickFormatter={formatShortVND} />
                   <Tooltip 
                     formatter={(value: number) => formatVND(value)}
@@ -421,78 +427,78 @@ const LoanRepaymentSchedule: React.FC = () => {
                     itemStyle={{ color: chartTextColor }}
                   />
                   <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
-                  {/* Ending Balance (Remaining Principal) - No Stack */}
-                  <Area type="monotone" dataKey="endingBalance" name={t('tools.loan.chartRemaining')} stroke="#64748b" fill="url(#colorPrincipal)" />
-                  {/* Accumulated Interest - No Stack */}
-                  <Area type="monotone" dataKey="accInterest" name={t('tools.loan.chartTotalInterest')} stroke="#e11d48" fill="url(#colorInterest)" />
+                  <Area type="monotone" dataKey="endingBalance" name={t('pages.tools.loan.chartRemaining')} stackId="1" stroke="#059669" fill="url(#colorBalance)" />
+                  <Area type="monotone" dataKey="accInterest" name={t('pages.tools.loan.chartTotalInterest')} stackId="2" stroke="#e11d48" fill="url(#colorInterest)" />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
           </div>
         </div>
       </div>
-      
+
       {/* Paginated Table - Full Width */}
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-             <div className="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 flex justify-between items-center">
-               <h3 className="font-semibold text-slate-900 dark:text-white">{t('tools.loan.schedule')}</h3>
-               <button 
-                  onClick={handleExportExcel}
-                  className="text-xs flex items-center gap-1 text-slate-500 dark:text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors border border-slate-200 dark:border-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-700"
-                >
-                  <FileSpreadsheet className="h-4 w-4" /> {t('tools.compound.exportExcel')}
-                </button>
-             </div>
-             <div className="overflow-x-auto">
-               <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-                 <thead className="bg-white dark:bg-slate-800">
-                   <tr>
-                     <th className="px-4 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('common.date')}</th>
-                     <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('tools.loan.colBalance')}</th>
-                     <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('tools.loan.colPrincipal')}</th>
-                     <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('tools.loan.colInterest')}</th>
-                     <th className="px-4 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('tools.loan.colTotal')}</th>
-                   </tr>
-                 </thead>
-                 <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
-                   {paginatedData.map((row) => (
-                     <tr key={row.month} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                       <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{row.date}</td>
-                       <td className="px-4 py-3 whitespace-nowrap text-sm text-right text-slate-900 dark:text-white font-medium">{formatShortVND(row.beginningBalance)}</td>
-                       <td className="px-4 py-3 whitespace-nowrap text-sm text-right text-slate-500 dark:text-slate-400">{formatShortVND(row.principalPaid)}</td>
-                       <td className="px-4 py-3 whitespace-nowrap text-sm text-right text-rose-600 dark:text-rose-400">{formatShortVND(row.interestPaid)}</td>
-                       <td className="px-4 py-3 whitespace-nowrap text-sm text-right text-emerald-600 dark:text-emerald-400 font-bold">{formatShortVND(row.totalPayment)}</td>
-                     </tr>
-                   ))}
-                 </tbody>
-               </table>
-             </div>
-             
-             {/* Pagination Controls */}
-             {totalPages > 1 && (
-               <div className="px-6 py-4 flex items-center justify-between border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
-                 <div className="text-sm text-slate-500 dark:text-slate-400">
-                   Page <span className="font-medium">{currentPage}</span> of <span className="font-medium">{totalPages}</span>
-                 </div>
-                 <div className="flex gap-2">
-                   <button
-                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                     disabled={currentPage === 1}
-                     className="p-2 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                   >
-                     <ChevronLeft className="h-4 w-4" />
-                   </button>
-                   <button
-                     onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                     disabled={currentPage === totalPages}
-                     className="p-2 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                   >
-                     <ChevronRight className="h-4 w-4" />
-                   </button>
-                 </div>
-               </div>
-             )}
+          <div className="p-4 border-b border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 flex items-center justify-between">
+            <h3 className="font-semibold text-slate-900 dark:text-white">{t('pages.tools.loan.schedule')}</h3>
+            <button 
+              onClick={handleExportExcel}
+              className="group flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-emerald-500 hover:text-emerald-600 rounded-full shadow-sm hover:shadow-md transition-all text-sm font-bold"
+            >
+              <FileSpreadsheet className="h-4 w-4" /> {t('pages.tools.compound.exportExcel')}
+            </button>
           </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+              <thead className="bg-white dark:bg-slate-800">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('common.month')}</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('common.date')}</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.tools.loan.colBalance')}</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.tools.loan.colPrincipal')}</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.tools.loan.colInterest')}</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.tools.loan.colTotal')}</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
+                {paginatedData.map((row) => (
+                  <tr key={row.month} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                    <td className="px-6 py-3 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">{row.month}</td>
+                    <td className="px-6 py-3 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">{row.date}</td>
+                    <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-slate-500 dark:text-slate-400">{formatVND(row.beginningBalance)}</td>
+                    <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-emerald-600 dark:text-emerald-400 font-medium">{formatVND(row.principalPaid)}</td>
+                    <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-rose-600 dark:text-rose-400 font-medium">{formatVND(row.interestPaid)}</td>
+                    <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-slate-900 dark:text-white font-bold">{formatVND(row.totalPayment)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="px-6 py-4 flex items-center justify-between border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
+              <div className="text-sm text-slate-500 dark:text-slate-400">
+                Page <span className="font-medium">{currentPage}</span> of <span className="font-medium">{totalPages}</span>
+              </div>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="p-2 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="p-2 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          )}
+      </div>
     </div>
   );
 };

@@ -66,7 +66,7 @@ const FundDetail: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <Link to="/funds" className="inline-flex items-center text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 mb-6 transition-colors">
-        <ArrowLeft className="h-4 w-4 mr-1" /> {t('fundDetail.back')}
+        <ArrowLeft className="h-4 w-4 mr-1" /> {t('pages.fundDetail.back')}
       </Link>
 
       {/* Header Card */}
@@ -92,9 +92,9 @@ const FundDetail: React.FC = () => {
             <div className="flex flex-col gap-3">
                <Link
                 to={`/simulator?fundId=${fund.id}`}
-                className="inline-flex items-center justify-center px-6 py-3 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition-colors shadow-sm"
+                className="inline-flex items-center justify-center px-8 py-3 bg-emerald-600 text-white font-bold rounded-full hover:bg-emerald-700 transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 active:scale-95"
               >
-                {t('fundDetail.simulate')}
+                {t('pages.fundDetail.simulate')}
                 <ExternalLink className="ml-2 h-4 w-4" />
               </Link>
             </div>
@@ -104,25 +104,25 @@ const FundDetail: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-100 dark:divide-slate-700">
           <div className="p-6">
             <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 mb-1 text-sm">
-              <Calendar className="h-4 w-4" /> {t('fundDetail.inception')}
+              <Calendar className="h-4 w-4" /> {t('pages.fundDetail.inception')}
             </div>
             <div className="text-lg font-semibold text-slate-900 dark:text-white">{fund.inceptionDate}</div>
           </div>
           <div className="p-6">
             <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 mb-1 text-sm">
-              <Percent className="h-4 w-4" /> {t('fundDetail.expense')}
+              <Percent className="h-4 w-4" /> {t('pages.fundDetail.expense')}
             </div>
             <div className="text-lg font-semibold text-slate-900 dark:text-white">{fund.expenseRatio}%</div>
           </div>
           <div className="p-6">
             <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 mb-1 text-sm">
-              <Activity className="h-4 w-4" /> {t('fundDetail.volatility')}
+              <Activity className="h-4 w-4" /> {t('pages.fundDetail.volatility')}
             </div>
             <div className="text-lg font-semibold text-slate-900 dark:text-white">{fund.volatility}%</div>
           </div>
           <div className="p-6">
             <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400 mb-1 text-sm">
-              <BarChart2 className="h-4 w-4" /> {t('fundDetail.benchmark')}
+              <BarChart2 className="h-4 w-4" /> {t('pages.fundDetail.benchmark')}
             </div>
             <div className="text-lg font-semibold text-slate-900 dark:text-white">{fund.benchmark}</div>
           </div>
@@ -139,7 +139,7 @@ const FundDetail: React.FC = () => {
         
         {/* NAV History Chart */}
         <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 transition-colors">
-          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">{t('fundDetail.navHistory')}</h3>
+          <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">{t('pages.fundDetail.navHistory')}</h3>
           <div className="h-[350px]">
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={historyData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
@@ -157,7 +157,7 @@ const FundDetail: React.FC = () => {
                   itemStyle={{ color: chartTextColor }}
                 />
                 <Area type="monotone" dataKey="nav" stroke="#059669" strokeWidth={2} fillOpacity={1} fill="url(#colorNav)" name="NAV" />
-                <Area type="monotone" dataKey="benchmark" stroke={isDark ? '#475569' : '#cbd5e1'} strokeWidth={2} strokeDasharray="4 4" fill="none" name={t('fundDetail.benchmark')} />
+                <Area type="monotone" dataKey="benchmark" stroke={isDark ? '#475569' : '#cbd5e1'} strokeWidth={2} strokeDasharray="4 4" fill="none" name={t('pages.fundDetail.benchmark')} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -165,7 +165,7 @@ const FundDetail: React.FC = () => {
 
         {/* Metrics Side Panel */}
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 transition-colors">
-           <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">{t('fundDetail.metrics')}</h3>
+           <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6">{t('pages.fundDetail.metrics')}</h3>
            <div className="space-y-6">
              <div>
                <div className="flex justify-between items-end mb-1">
@@ -204,11 +204,11 @@ const FundDetail: React.FC = () => {
 
              <div className="pt-6 border-t border-slate-100 dark:border-slate-700">
                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-slate-500 dark:text-slate-400">{t('fundDetail.maxDrawdown')}</span>
+                  <span className="text-sm text-slate-500 dark:text-slate-400">{t('pages.fundDetail.maxDrawdown')}</span>
                   <span className="text-sm font-semibold text-rose-600 dark:text-rose-400">{fund.maxDrawdown}%</span>
                </div>
                <p className="text-xs text-slate-400 dark:text-slate-500">
-                 {t('fundDetail.drawdownDesc')}
+                 {t('pages.fundDetail.drawdownDesc')}
                </p>
              </div>
            </div>

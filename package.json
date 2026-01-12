@@ -10,18 +10,23 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "html2canvas": "^1.4.1",
-    "i18next": "^23.7.11",
-    "lucide-react": "^0.292.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-i18next": "^14.0.0",
     "react-router-dom": "^6.22.0",
     "recharts": "^2.12.0",
-    "xlsx": "^0.18.5"
+    "lucide-react": "^0.292.0",
+    "i18next": "^23.7.11",
+    "react-i18next": "^14.0.0",
+    "html2canvas": "^1.4.1",
+    "xlsx": "^0.18.5",
+    "@radix-ui/react-dialog": "^1.0.5",
+    "@radix-ui/react-slot": "^1.0.2",
+    "@radix-ui/react-navigation-menu": "^1.1.4",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.1.0",
+    "tailwind-merge": "^2.2.1"
   },
   "devDependencies": {
-    "@types/node": "^25.0.3",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
     "@vitejs/plugin-react": "^4.2.1",

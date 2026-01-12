@@ -2,8 +2,8 @@ import React, { createContext, useEffect, useState } from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Layout - Import components from the new files
-import { Header } from './components/layout/Header';
-import { Footer } from './components/layout/Footer';
+import { Header } from '../components/layout/Header';
+import { Footer } from '../components/layout/Footer';
 
 // Pages
 import HomeV2 from './pages/HomeV2';
