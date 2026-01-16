@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, RefreshCcw, ChevronLeft, ChevronRight, Calculator, PieChart, Download, Image as ImageIcon, FileSpreadsheet, Info, BookOpen, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, RefreshCcw, ChevronLeft, ChevronRight, Calculator, PieChart, Download, Image as ImageIcon, FileSpreadsheet, Info, BookOpen, AlertTriangle, Wallet, PiggyBank, TrendingUp, Sparkles } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import html2canvas from 'html2canvas';
 import * as XLSX from 'xlsx';
@@ -311,19 +311,56 @@ const CompoundInterestCalculator: React.FC = () => {
         {/* Right Column: Summary & Chart */}
         <div className="lg:col-span-8 space-y-6">
           
-          {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-               <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">{t('pages.tools.compound.summary', {years})}</div>
-               <div className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">{formatShortVND(finalResult.totalBalance)}</div>
+          {/* UPDATED: Modern FinTech Metric Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+             
+             {/* Card 1: HERO - Total Balance (Gradient & Pattern) */}
+             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 p-6 text-white shadow-lg md:col-span-1 lg:col-span-1 xl:col-span-1">
+                {/* Decorative Circles */}
+                <div className="absolute -right-4 -top-4 h-32 w-32 rounded-full border-[16px] border-white/10"></div>
+                <div className="absolute -right-8 -top-8 h-48 w-48 rounded-full border-[16px] border-white/5"></div>
+                
+                <div className="relative z-10 flex flex-col h-full justify-between">
+                   <div>
+                      <p className="text-emerald-100 text-sm font-medium mb-1">{t('pages.tools.compound.summary', {years})}</p>
+                      <h3 className="text-3xl font-extrabold tracking-tight">
+                        {formatShortVND(finalResult.totalBalance)}
+                      </h3>
+                   </div>
+                   <div className="mt-4 flex items-center gap-2 text-emerald-50 text-xs">
+                      <Sparkles className="h-4 w-4 text-yellow-300 fill-yellow-300" />
+                      <span>Tổng tài sản dự kiến</span>
+                   </div>
+                </div>
              </div>
-             <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-               <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">{t('pages.simulator.totalInv')}</div>
-               <div className="text-xl font-bold text-slate-900 dark:text-white">{formatShortVND(finalResult.totalInvested)}</div>
+
+             {/* Card 2: Total Invested (Clean Style) */}
+             <div className="rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
+               <div className="flex justify-between items-start mb-4">
+                   <div className="bg-blue-50 dark:bg-blue-900/30 p-2.5 rounded-xl">
+                      <Wallet className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                   </div>
+               </div>
+               <div>
+                   <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">{t('pages.simulator.totalInv')}</p>
+                   <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{formatShortVND(finalResult.totalInvested)}</h3>
+               </div>
              </div>
-             <div className="bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
-               <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">{t('pages.tools.compound.earned')}</div>
-               <div className="text-xl font-bold text-indigo-600 dark:text-indigo-400">{formatShortVND(finalResult.interestEarned)}</div>
+
+             {/* Card 3: Interest Earned (Clean Style) */}
+             <div className="rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
+               <div className="flex justify-between items-start mb-4">
+                   <div className="bg-indigo-50 dark:bg-indigo-900/30 p-2.5 rounded-xl">
+                      <TrendingUp className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                   </div>
+                   <span className="text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded-md">
+                      +{((finalResult.interestEarned / finalResult.totalInvested) * 100).toFixed(0)}%
+                   </span>
+               </div>
+               <div>
+                   <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">{t('pages.tools.compound.earned')}</p>
+                   <h3 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{formatShortVND(finalResult.interestEarned)}</h3>
+               </div>
              </div>
           </div>
 

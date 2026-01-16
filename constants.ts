@@ -237,83 +237,76 @@ export const MOCK_FUNDS: Fund[] = [
 
 export const MOCK_ARTICLES: Article[] = [
   {
-    id: '1',
-    title: 'Hiểu về Tỷ lệ chi phí (Expense Ratio) tại Việt Nam',
-    summary: 'Tại sao việc trả phí 2% so với 0.6% tạo ra sự khác biệt lớn sau 20 năm.',
-    date: '12 Th10, 2023',
-    readTime: '5 phút đọc',
+    id: 'why-invest',
+    title: 'Tại sao phải đầu tư? Hiểu về Lạm phát, Lãi kép và Tự do tài chính',
+    summary: 'Đầu tư không phải là con đường làm giàu nhanh, mà là cách duy nhất để bảo vệ sức lao động của bạn trước sự bào mòn của lạm phát. Bài viết này giải thích triết lý cốt lõi của Bảng tin Tài chính VN.',
+    date: '20 Th05, 2024',
+    readTime: '10 phút đọc',
     content: `
-      <p class="mb-4">Khi đầu tư vào các quỹ mở hoặc ETF, nhiều nhà đầu tư thường chỉ tập trung vào lợi nhuận quá khứ mà bỏ qua một yếu tố quan trọng không kém: <strong>Chi phí (Expense Ratio)</strong>.</p>
+      <p class="mb-4 text-lg font-medium text-slate-700 dark:text-slate-200">
+        Bạn có bao giờ tự hỏi: Tại sao 100.000 đồng hôm nay mua được ít đồ hơn 100.000 đồng của 5 năm trước? Tại sao để tiền trong ngân hàng lại được coi là "lỗ" trong dài hạn? Và làm thế nào để người giàu ngày càng giàu hơn?
+      </p>
       
-      <h3 class="text-xl font-bold mt-6 mb-3">Tỷ lệ chi phí là gì?</h3>
-      <p class="mb-4">Tỷ lệ chi phí là khoản phí hàng năm mà quỹ thu để trang trải các chi phí vận hành, quản lý và marketing. Khoản phí này được khấu trừ trực tiếp vào tài sản ròng (NAV) của quỹ mỗi ngày, nghĩa là bạn sẽ không thấy nó trong sao kê giao dịch, nhưng nó âm thầm làm giảm lợi nhuận của bạn.</p>
+      <p class="mb-6">
+        Câu trả lời nằm ở ba khái niệm cốt lõi: <strong>Lạm phát</strong>, <strong>Lãi suất thực</strong> và <strong>Lãi kép</strong>. Bài viết này sẽ giải thích lý do tại sao đầu tư không phải là một sự lựa chọn xa xỉ, mà là một nhu cầu bắt buộc nếu bạn muốn bảo vệ tương lai tài chính của mình.
+      </p>
 
-      <h3 class="text-xl font-bold mt-6 mb-3">Tác động của 1% chênh lệch</h3>
-      <p class="mb-4">Hãy tưởng tượng bạn đầu tư 1 tỷ đồng trong 20 năm với lợi nhuận gộp 10%/năm.</p>
-      <ul class="list-disc pl-6 mb-4 space-y-2">
-        <li><strong>Quỹ A (Phí 0.6%):</strong> Lợi nhuận thực nhận là 9.4%. Sau 20 năm, bạn có khoảng <strong>6.03 tỷ đồng</strong>.</li>
-        <li><strong>Quỹ B (Phí 2.0%):</strong> Lợi nhuận thực nhận là 8.0%. Sau 20 năm, bạn có khoảng <strong>4.66 tỷ đồng</strong>.</li>
+      <div class="my-8 p-6 bg-slate-50 dark:bg-slate-700/30 border-l-4 border-emerald-500 rounded-r-lg">
+        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-2">1. Kẻ thù vô hình: Lạm phát</h3>
+        <p class="text-slate-600 dark:text-slate-300 mb-0">
+          Hãy tưởng tượng lạm phát như một con mối mọt, âm thầm gặm nhấm giá trị đồng tiền của bạn mỗi ngày. Tại Việt Nam, lạm phát trung bình thường dao động quanh mức 3-4% mỗi năm. Điều này có nghĩa là, nếu bạn giữ 100 triệu đồng tiền mặt dưới gối, năm sau nó chỉ còn sức mua tương đương khoảng 96 triệu đồng. Sau 10 năm, sức mua đó có thể giảm xuống chỉ còn khoảng 60-70 triệu.
+        </p>
+      </div>
+
+      <h3 class="text-2xl font-bold mt-8 mb-4 text-slate-900 dark:text-white">2. Cái bẫy của Tiền gửi tiết kiệm</h3>
+      <p class="mb-4">
+        Nhiều người coi gửi tiết kiệm ngân hàng là kênh đầu tư an toàn nhất. Tuy nhiên, hãy nhìn vào công thức:
+      </p>
+      <div class="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg text-center font-mono text-sm sm:text-base font-bold text-emerald-600 dark:text-emerald-400 mb-6">
+        Lãi suất thực = Lãi suất ngân hàng - Lạm phát
+      </div>
+      <p class="mb-4">
+        Nếu ngân hàng trả lãi 6%/năm và lạm phát là 4%/năm, tài sản của bạn thực chất chỉ tăng trưởng <strong>2%</strong>. Đây là mức tăng trưởng quá thấp để tạo ra sự đột phá về tài sản hay đạt được tự do tài chính. Gửi tiết kiệm chỉ giúp bạn <em>giữ tiền</em>, không phải là cách tối ưu để <em>nhân tiền</em>.
+      </p>
+
+      <h3 class="text-2xl font-bold mt-8 mb-4 text-slate-900 dark:text-white">3. Kỳ quan thứ 8: Lãi suất kép</h3>
+      <p class="mb-4">
+        Albert Einstein từng gọi lãi suất kép là "kỳ quan thứ 8 của thế giới". Đây là chìa khóa để biến những khoản tiền nhỏ thành gia tài lớn theo thời gian.
+      </p>
+      <p class="mb-4">
+        Khi bạn đầu tư vào cổ phiếu, chứng chỉ quỹ hoặc bất động sản, lợi nhuận sinh ra (cổ tức, tiền lãi) sẽ được tái đầu tư để sinh ra lợi nhuận tiếp theo. Giống như hòn tuyết lăn, ban đầu nó rất nhỏ, nhưng càng lăn lâu, nó càng to ra với tốc độ khủng khiếp.
+      </p>
+      <ul class="list-disc pl-6 mb-6 space-y-2 text-slate-700 dark:text-slate-300">
+        <li><strong>Đầu tư sớm:</strong> Thời gian quan trọng hơn số vốn. Bắt đầu từ năm 20 tuổi với 1 triệu/tháng sẽ hiệu quả hơn nhiều so với bắt đầu từ năm 40 tuổi với 5 triệu/tháng.</li>
+        <li><strong>Kỷ luật:</strong> Đầu tư đều đặn (DCA) giúp bạn tận dụng tối đa lãi kép và giảm thiểu rủi ro biến động thị trường.</li>
       </ul>
-      <p class="mb-4">Sự chênh lệch chỉ 1.4% phí dẫn đến sự khác biệt gần <strong>1.4 tỷ đồng</strong> tiền mặt sau 20 năm. Đó là cái giá của chi phí quản lý cao.</p>
 
-      <h3 class="text-xl font-bold mt-6 mb-3">Thực trạng tại Việt Nam</h3>
-      <p class="mb-4">Tại Việt Nam, các quỹ ETF thường có mức phí thấp hơn (khoảng 0.5% - 0.8%), trong khi các quỹ mở chủ động thường thu phí cao hơn (1.5% - 2.5%) với lời hứa sẽ đánh bại thị trường.</p>
-      <p class="mb-4">Tuy nhiên, dữ liệu lịch sử cho thấy rất ít quỹ chủ động có thể chiến thắng thị trường một cách nhất quán sau khi trừ đi các khoản phí này trong dài hạn.</p>
+      <h3 class="text-2xl font-bold mt-8 mb-4 text-slate-900 dark:text-white">4. Tại sao lại là Đầu tư Thụ động?</h3>
+      <p class="mb-4">
+        Trang web này, <strong>Bảng tin Tài chính VN</strong>, được xây dựng dựa trên triết lý của đầu tư thụ động (Passive Investing).
+      </p>
+      <p class="mb-4">
+        Thay vì cố gắng "đánh bại thị trường" bằng cách mua đi bán lại cổ phiếu hàng ngày (điều mà 90% nhà đầu tư cá nhân thất bại), chúng tôi khuyến khích việc nắm giữ dài hạn các <strong>Quỹ hoán đổi danh mục (ETF)</strong> hoặc <strong>Quỹ mở (Mutual Funds)</strong> uy tín.
+      </p>
+      <p class="mb-4">
+        Lịch sử thị trường chứng khoán Việt Nam (VN-Index) cho thấy xu hướng tăng trưởng dài hạn song hành cùng sự phát triển của nền kinh tế. Bằng cách sở hữu một phần của rổ cổ phiếu đại diện cho nền kinh tế (như VN30, VNX50), bạn sẽ được hưởng lợi từ sự tăng trưởng chung đó mà không cần tốn thời gian phân tích từng mã cổ phiếu.
+      </p>
 
-      <h3 class="text-xl font-bold mt-6 mb-3">Lời khuyên</h3>
-      <p class="mb-4">Hãy luôn kiểm tra mục "Phí quản lý" hoặc "Tỷ lệ chi phí" trong bản cáo bạch của quỹ trước khi xuống tiền. Trong đầu tư thụ động, chi phí là yếu tố duy nhất bạn có thể kiểm soát hoàn toàn.</p>
-    `
-  },
-  {
-    id: '2',
-    title: 'ETF vs Quỹ Mở: Lựa chọn nào cho bạn?',
-    summary: 'So sánh về thanh khoản, chi phí và sai số mô phỏng (tracking error).',
-    date: '28 Th09, 2023',
-    readTime: '7 phút đọc',
-    content: `
-      <p class="mb-4">Trên thị trường chứng khoán Việt Nam, hai loại hình quỹ phổ biến nhất dành cho nhà đầu tư cá nhân là <strong>ETF (Quỹ hoán đổi danh mục)</strong> và <strong>Quỹ mở (Mutual Fund)</strong>. Dù cả hai đều giúp đa dạng hóa danh mục, cơ chế hoạt động của chúng rất khác nhau.</p>
-
-      <h3 class="text-xl font-bold mt-6 mb-3">1. Cơ chế giao dịch</h3>
-      <ul class="list-disc pl-6 mb-4 space-y-2">
-        <li><strong>ETF:</strong> Giao dịch như một cổ phiếu trên sàn HOSE/HNX. Bạn có thể mua bán ngay lập tức trong giờ giao dịch với giá khớp lệnh thời gian thực.</li>
-        <li><strong>Quỹ mở:</strong> Giao dịch trực tiếp với công ty quản lý quỹ. Lệnh thường được chốt vào cuối ngày hoặc ngày làm việc tiếp theo (T+1) dựa trên giá NAV đóng cửa.</li>
-      </ul>
-
-      <h3 class="text-xl font-bold mt-6 mb-3">2. Chiến lược đầu tư</h3>
-      <p class="mb-4"><strong>ETF</strong> thường là đầu tư <em>thụ động</em>. Mục tiêu của nó là mô phỏng chính xác nhất có thể một chỉ số (như VN30, VNX50). Nếu VN30 tăng 10%, ETF cũng nên tăng khoảng 10% (trừ phí).</p>
-      <p class="mb-4"><strong>Quỹ mở</strong> thường là đầu tư <em>chủ động</em>. Các chuyên gia sẽ chọn lọc cổ phiếu để cố gắng đạt lợi nhuận cao hơn thị trường chung. Tuy nhiên, điều này đi kèm rủi ro con người cao hơn.</p>
-
-      <h3 class="text-xl font-bold mt-6 mb-3">3. Chi phí</h3>
-      <p class="mb-4">Như đã đề cập ở bài viết trước, ETF thường có lợi thế lớn về chi phí quản lý (0.5% - 0.8%) so với quỹ mở (1.5% - 2.5%). Ngoài ra, ETF không có phí gia nhập/rút vốn (chỉ tốn phí giao dịch chứng khoán nhỏ), trong khi quỹ mở có thể thu phí bán lại nếu bạn rút vốn sớm (thường dưới 1-2 năm).</p>
-
-      <h3 class="text-xl font-bold mt-6 mb-3">Kết luận</h3>
-      <p class="mb-4">Nếu bạn tin tưởng vào sự tăng trưởng dài hạn của kinh tế Việt Nam và muốn chi phí thấp nhất, <strong>ETF</strong> là lựa chọn tối ưu. Nếu bạn muốn tìm kiếm cơ hội vượt trội và chấp nhận trả phí cao hơn cho chuyên gia, <strong>Quỹ mở</strong> có thể phù hợp.</p>
-    `
-  },
-  {
-    id: '3',
-    title: 'Sức mạnh của DCA trong thị trường biến động',
-    summary: 'Cách đầu tư hàng tháng giúp làm phẳng các đỉnh và đáy của VN-Index.',
-    date: '15 Th09, 2023',
-    readTime: '4 phút đọc',
-    content: `
-      <p class="mb-4">Thị trường chứng khoán Việt Nam nổi tiếng với độ biến động cao. VN-Index có thể tăng 20% trong một tháng nhưng cũng có thể giảm 15% ngay sau đó. Làm thế nào để nhà đầu tư cá nhân tồn tại?</p>
-      
-      <h3 class="text-xl font-bold mt-6 mb-3">Chiến lược DCA (Dollar-Cost Averaging)</h3>
-      <p class="mb-4">DCA, hay Trung bình giá, là chiến lược đầu tư một số tiền cố định vào một khoản đầu tư theo lịch trình định kỳ (ví dụ: 5 triệu đồng vào ngày 15 hàng tháng), bất kể giá cả thị trường đang ra sao.</p>
-
-      <h3 class="text-xl font-bold mt-6 mb-3">Tại sao DCA hiệu quả?</h3>
-      <ol class="list-decimal pl-6 mb-4 space-y-2">
-        <li><strong>Loại bỏ cảm xúc:</strong> Bạn không cần phải đoán đỉnh hay đáy. Bạn cứ mua đều đặn như một cái máy.</li>
-        <li><strong>Mua nhiều hơn khi giá thấp:</strong> Với cùng 5 triệu đồng, khi giá chứng chỉ quỹ thấp, bạn mua được nhiều đơn vị hơn. Khi giá cao, bạn mua được ít hơn. Kết quả là giá vốn trung bình của bạn thường thấp hơn giá trung bình của thị trường.</li>
-        <li><strong>Phù hợp với dòng tiền lương:</strong> Đa số chúng ta có thu nhập hàng tháng, vì vậy việc trích một phần để đầu tư ngay khi nhận lương là cách kỷ luật tốt nhất.</li>
+      <h3 class="text-2xl font-bold mt-8 mb-4 text-slate-900 dark:text-white">5. Mục đích của trang web này</h3>
+      <p class="mb-4">
+        Chúng tôi tạo ra <strong>Bảng tin Tài chính VN</strong> không phải để kêu gọi đầu tư hay phím hàng. Mục đích của chúng tôi là:
+      </p>
+      <ol class="list-decimal pl-6 mb-6 space-y-3 text-slate-700 dark:text-slate-300">
+        <li><strong>Minh bạch hóa dữ liệu:</strong> Cung cấp cái nhìn trực quan, trung thực về hiệu suất quá khứ của các quỹ đầu tư tại Việt Nam.</li>
+        <li><strong>Công cụ hóa kiến thức:</strong> Cung cấp các công cụ (Máy tính lãi kép, Giả lập đầu tư, Tính toán FIRE) để bạn tự lập kế hoạch cho riêng mình.</li>
+        <li><strong>Xây dựng niềm tin:</strong> Chứng minh bằng số liệu rằng đầu tư dài hạn, kỷ luật là con đường chắc chắn nhất để đạt được thịnh vượng.</li>
       </ol>
 
-      <h3 class="text-xl font-bold mt-6 mb-3">Ví dụ thực tế</h3>
-      <p class="mb-4">Giả sử bạn bắt đầu DCA vào đỉnh năm 2022. Mặc dù thị trường giảm mạnh sau đó, nhưng nhờ việc bạn liên tục mua vào ở vùng đáy 2023, tài khoản của bạn có thể đã hòa vốn hoặc có lãi ngay khi thị trường mới chỉ phục hồi nhẹ, trong khi những người "all-in" ở đỉnh vẫn đang lỗ nặng.</p>
-
-      <h3 class="text-xl font-bold mt-6 mb-3">Lời kết</h3>
-      <p class="mb-4">Trong đầu tư thụ động, <em>thời gian trên thị trường (time in the market)</em> quan trọng hơn <em>thời điểm vào thị trường (timing the market)</em>. DCA là công cụ giúp bạn duy trì thời gian trên thị trường lâu nhất có thể.</p>
+      <div class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-700">
+        <p class="italic text-slate-500 dark:text-slate-400">
+          "Cây tốt nhất để trồng là 20 năm trước. Cây tốt thứ hai là ngay bây giờ." - Ngạn ngữ Trung Quốc. Hãy bắt đầu hành trình của bạn bằng việc khám phá các công cụ trên trang web này.
+        </p>
+      </div>
     `
   }
 ];

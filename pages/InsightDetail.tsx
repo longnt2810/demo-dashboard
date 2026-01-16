@@ -21,7 +21,7 @@ const InsightDetail: React.FC = () => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <Link to="/insights" className="inline-flex items-center text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 mb-8 transition-colors">
         <ArrowLeft className="h-4 w-4 mr-1" /> {t('pages.insightDetail.back')}
       </Link>

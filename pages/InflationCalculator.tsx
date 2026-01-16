@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, RefreshCcw, TrendingDown, Coffee, ShoppingBag, Coins } from 'lucide-react';
+import { ArrowLeft, RefreshCcw, TrendingDown, Coffee, ShoppingBag, Coins, TrendingUp } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import { ThemeContext } from '../App';
@@ -80,6 +80,9 @@ const InflationCalculator: React.FC = () => {
   };
   const phoPriceToday = 50000;
   const phoPriceFuture = phoPriceToday * Math.pow(1 + inflationRate / 100, years);
+  
+  // New Metric: Total Loss %
+  const lossPercentage = currentAmount > 0 ? ((currentAmount - finalData.purchasingPower) / currentAmount) * 100 : 0;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -192,36 +195,61 @@ const InflationCalculator: React.FC = () => {
         {/* Right Column: Summary & Chart */}
         <div className="lg:col-span-8 space-y-6">
           
-          {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-             {/* Purchasing Power Card */}
-             <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 relative overflow-hidden group">
-               <div className="relative z-10">
-                 <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1 flex items-center gap-2">
-                    <ShoppingBag className="h-4 w-4" />
-                    {t('pages.tools.inflation.purchasingPower')}
-                 </div>
-                 <div className="text-3xl font-bold text-rose-600 dark:text-rose-400">{formatShortVND(finalData.purchasingPower)}</div>
-                 <p className="text-xs text-slate-400 mt-2">
-                   Giá trị thực của {formatShortVND(currentAmount)} sau {years} năm.
-                 </p>
+          {/* UPDATED: Modern FinTech Metric Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+             
+             {/* Card 1: HERO - Purchasing Power (Rose Gradient) */}
+             <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 p-6 text-white shadow-lg md:col-span-1 lg:col-span-1 xl:col-span-1">
+               {/* Decorative Circles */}
+               <div className="absolute -right-4 -top-4 h-32 w-32 rounded-full border-[16px] border-white/10"></div>
+               <div className="absolute -right-8 -top-8 h-48 w-48 rounded-full border-[16px] border-white/5"></div>
+               
+               <div className="relative z-10 flex flex-col h-full justify-between">
+                  <div>
+                     <p className="text-rose-100 text-sm font-medium mb-1 flex items-center gap-2">
+                        <ShoppingBag className="h-4 w-4" />
+                        {t('pages.tools.inflation.purchasingPower')}
+                     </p>
+                     <h3 className="text-3xl font-extrabold tracking-tight">
+                       {formatShortVND(finalData.purchasingPower)}
+                     </h3>
+                  </div>
+                  <div className="mt-4 flex items-center gap-2 text-rose-50 text-xs">
+                     <TrendingDown className="h-4 w-4 text-white" />
+                     <span>Giá trị thực còn lại</span>
+                  </div>
                </div>
-               <div className="absolute right-0 top-0 h-full w-24 bg-rose-50 dark:bg-rose-900/10 transform skew-x-12 translate-x-8"></div>
              </div>
 
-             {/* Future Cost Card */}
-             <div className="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 relative overflow-hidden">
-               <div className="relative z-10">
-                 <div className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1 flex items-center gap-2">
-                    <Coins className="h-4 w-4" />
-                    {t('pages.tools.inflation.futureCost')}
-                 </div>
-                 <div className="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{formatShortVND(finalData.futureCost)}</div>
-                 <p className="text-xs text-slate-400 mt-2">
-                    {t('pages.tools.inflation.resultDesc', { amount: formatShortVND(currentAmount), future: formatShortVND(finalData.futureCost), year: finalData.year })}
-                 </p>
+             {/* Card 2: Future Cost (Clean Style) */}
+             <div className="rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
+               <div className="flex justify-between items-start mb-4">
+                   <div className="bg-emerald-50 dark:bg-emerald-900/30 p-2.5 rounded-xl">
+                      <Coins className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+                   </div>
                </div>
-               <div className="absolute right-0 top-0 h-full w-24 bg-emerald-50 dark:bg-emerald-900/10 transform skew-x-12 translate-x-8"></div>
+               <div>
+                   <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">{t('pages.tools.inflation.futureCost')}</p>
+                   <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{formatShortVND(finalData.futureCost)}</h3>
+                   <div className="text-xs text-slate-400 mt-1">Để mua cùng lượng hàng hóa</div>
+               </div>
+             </div>
+
+             {/* Card 3: Loss Percentage (Clean Style) */}
+             <div className="rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
+               <div className="flex justify-between items-start mb-4">
+                   <div className="bg-gray-50 dark:bg-gray-800 p-2.5 rounded-xl">
+                      <TrendingUp className="h-6 w-6 text-gray-600 dark:text-gray-400" />
+                   </div>
+                   <span className="text-xs font-bold text-rose-600 bg-rose-50 dark:bg-rose-900/30 px-2 py-1 rounded-md">
+                      Mất {lossPercentage.toFixed(1)}%
+                   </span>
+               </div>
+               <div>
+                   <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">Tài sản bốc hơi</p>
+                   <h3 className="text-2xl font-bold text-rose-600 dark:text-rose-400">{formatShortVND(currentAmount - finalData.purchasingPower)}</h3>
+                   <div className="text-xs text-slate-400 mt-1">Do lạm phát tích lũy</div>
+               </div>
              </div>
           </div>
 
