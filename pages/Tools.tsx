@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Calculator, Target, Landmark, ArrowRight, TrendingDown, Flame, Mail, Copy, Check } from 'lucide-react';
+import { Calculator, Target, Landmark, ArrowRight, TrendingDown, Flame, Mail, Copy, Check, Briefcase, Zap } from 'lucide-react';
 import { MOCK_TOOLS } from '../constants';
 import { useTranslation } from 'react-i18next';
 
@@ -26,63 +26,93 @@ const Tools: React.FC = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  // Define groups
+  const investmentIds = ['compound', 'goal', 'fire'];
+  const utilityIds = ['inflation', 'loan'];
+
+  const investmentTools = MOCK_TOOLS.filter(t => investmentIds.includes(t.id));
+  const utilityTools = MOCK_TOOLS.filter(t => utilityIds.includes(t.id));
+
+  const renderToolCard = (tool: any) => {
+    const content = getToolContent(tool.id);
+    // Determine icon and specific path logic if needed (currently path is generic in MOCK_TOOLS except hardcoded links)
+    // We override the MOCK_TOOLS path with specific routes
+    let specificPath = tool.path;
+    if(tool.id === 'compound') specificPath = '/tools/compound-interest';
+    if(tool.id === 'inflation') specificPath = '/tools/inflation-calculator';
+    if(tool.id === 'fire') specificPath = '/tools/fire-calculator';
+    if(tool.id === 'goal') specificPath = '/tools/financial-goal-planner';
+    if(tool.id === 'loan') specificPath = '/tools/loan-repayment';
+
+    return (
+      <div key={tool.id} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 flex flex-col hover:shadow-md transition-all group h-full">
+        <div className="bg-emerald-50 dark:bg-emerald-900/30 w-12 h-12 rounded-lg flex items-center justify-center mb-6">
+          {tool.id === 'compound' && <Calculator className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />}
+          {tool.id === 'inflation' && <TrendingDown className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />}
+          {tool.id === 'fire' && <Flame className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />}
+          {tool.id === 'goal' && <Target className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />}
+          {tool.id === 'loan' && <Landmark className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />}
+        </div>
+        <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+          {content.name}
+        </h3>
+        <p className="text-slate-500 dark:text-slate-400 mb-6 flex-grow">
+          {content.desc}
+        </p>
+        <Link to={specificPath} className="flex items-center text-sm font-semibold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300 mt-auto">
+          {t('common.actions.launch')} <ArrowRight className="ml-1 h-4 w-4" />
+        </Link>
+      </div>
+    );
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div className="mb-12 text-center max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">{t('pages.tools.title')}</h1>
-        <p className="text-slate-500 dark:text-slate-400 text-lg">
+      
+      {/* Page Header - Left Aligned */}
+      <div className="mb-12">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">{t('pages.tools.title')}</h1>
+        <p className="text-slate-500 dark:text-slate-400 text-lg max-w-3xl">
           {t('pages.tools.subtitle')}
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {MOCK_TOOLS.map((tool) => {
-            const content = getToolContent(tool.id);
-            return (
-          <div key={tool.id} className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-8 flex flex-col hover:shadow-md transition-all group">
-            <div className="bg-emerald-50 dark:bg-emerald-900/30 w-12 h-12 rounded-lg flex items-center justify-center mb-6">
-              {tool.id === 'compound' && <Calculator className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />}
-              {tool.id === 'inflation' && <TrendingDown className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />}
-              {tool.id === 'fire' && <Flame className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />}
-              {tool.id === 'goal' && <Target className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />}
-              {tool.id === 'loan' && <Landmark className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />}
+      <div className="space-y-16">
+        
+        {/* Section 1: Investment & Accumulation */}
+        <section>
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-200 dark:border-slate-800">
+                <div className="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
+                    <Briefcase className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                    {t('navigation.groups.investment')}
+                </h2>
             </div>
-            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-              {content.name}
-            </h3>
-            <p className="text-slate-500 dark:text-slate-400 mb-6 flex-grow">
-              {content.desc}
-            </p>
-            {tool.id === 'compound' && (
-              <Link to="/tools/compound-interest" className="flex items-center text-sm font-semibold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">
-                {t('common.actions.launch')} <ArrowRight className="ml-1 h-4 w-4" />
-              </Link>
-            )}
-            {tool.id === 'inflation' && (
-              <Link to="/tools/inflation-calculator" className="flex items-center text-sm font-semibold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">
-                {t('common.actions.launch')} <ArrowRight className="ml-1 h-4 w-4" />
-              </Link>
-            )}
-            {tool.id === 'fire' && (
-              <Link to="/tools/fire-calculator" className="flex items-center text-sm font-semibold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">
-                {t('common.actions.launch')} <ArrowRight className="ml-1 h-4 w-4" />
-              </Link>
-            )}
-            {tool.id === 'goal' && (
-              <Link to="/tools/financial-goal-planner" className="flex items-center text-sm font-semibold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">
-                 {t('common.actions.launch')} <ArrowRight className="ml-1 h-4 w-4" />
-              </Link>
-            )}
-            {tool.id === 'loan' && (
-              <Link to="/tools/loan-repayment" className="flex items-center text-sm font-semibold text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 dark:hover:text-emerald-300">
-                 {t('common.actions.launch')} <ArrowRight className="ml-1 h-4 w-4" />
-              </Link>
-            )}
-          </div>
-        )})}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {investmentTools.map(tool => renderToolCard(tool))}
+            </div>
+        </section>
+
+        {/* Section 2: Financial Utilities */}
+        <section>
+            <div className="flex items-center gap-3 mb-6 pb-4 border-b border-slate-200 dark:border-slate-800">
+                <div className="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-lg">
+                    <Zap className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                </div>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                    {t('navigation.groups.utilities')}
+                </h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {utilityTools.map(tool => renderToolCard(tool))}
+            </div>
+        </section>
+
       </div>
 
-      <div className="mt-16 bg-slate-100 dark:bg-slate-800 rounded-xl p-8 transition-colors max-w-3xl mx-auto text-center">
+      {/* Footer / Request Tool */}
+      <div className="mt-20 bg-slate-100 dark:bg-slate-800 rounded-xl p-8 transition-colors max-w-3xl mx-auto text-center border border-slate-200 dark:border-slate-700">
         <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Yêu cầu công cụ mới</h3>
         <p className="text-slate-600 dark:text-slate-300 mb-6 text-sm">
           Bạn có ý tưởng về công cụ tài chính hữu ích? Hãy gửi yêu cầu cho chúng tôi.

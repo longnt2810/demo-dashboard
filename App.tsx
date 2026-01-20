@@ -20,6 +20,7 @@ import FinancialGoalPlanner from './pages/FinancialGoalPlanner';
 import LoanRepaymentSchedule from './pages/LoanRepaymentSchedule';
 import InflationCalculator from './pages/InflationCalculator';
 import FireCalculator from './pages/FireCalculator';
+import NotFound from './pages/NotFound';
 
 // Theme Context Definition
 interface ThemeContextType {
@@ -107,6 +108,8 @@ const App: React.FC = () => {
                 <Route path="/tools/fire-calculator" element={<FireCalculator />} />
                 <Route path="/insights" element={<Insights />} />
                 <Route path="/insights/:id" element={<InsightDetail />} />
+                {/* Catch-all route for 404 */}
+                <Route path="*" element={<NotFound />} />
               </Routes>
             </main>
             <Footer />
