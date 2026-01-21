@@ -43,6 +43,8 @@ const resources = {
         "month": "Tháng",
         "date": "Ngày",
         "currency": "₫",
+        "tools": "Công cụ",
+        "simulator": "Giả lập",
         "actions": {
           "continue": "Tiếp tục",
           "cancel": "Hủy bỏ",
@@ -65,6 +67,13 @@ const resources = {
           "ctaTitle": "Sẵn sàng bắt đầu hành trình?",
           "ctaDesc": "Sử dụng công cụ mô phỏng để thấy sức mạnh của lãi suất kép với các khoản đầu tư hàng tháng.",
           "ctaBtn": "Mô phỏng ngay"
+        },
+        "homeV2": {
+            "title": "Tổng quan Thị trường",
+            "subtitle": "Dữ liệu hiệu suất các quỹ đầu tư hàng đầu.",
+            "topFunds": "Top Quỹ Tăng Trưởng",
+            "riskTitle": "Biểu đồ Rủi ro & Lợi nhuận",
+            "riskDesc": "Tương quan giữa Lợi nhuận và Biến động (Rủi ro) trong khung thời gian"
         },
         "dashboard": {
           "title": "Tổng quan Thị trường",
@@ -106,148 +115,146 @@ const resources = {
           "table": {
             "fund": "Quỹ",
             "1y": "1 Năm",
-            "3y": "3 Năm (TB)",
-            "5y": "5 Năm (TB)",
-            "volatility": "Độ biến động",
-            "expense": "Phí Quản lý"
+            "3y": "3 Năm",
+            "5y": "5 Năm",
+            "volatility": "Biến động",
+            "expense": "Phí QL"
           }
         },
         "fundDetail": {
-          "back": "Quay lại danh sách",
-          "simulate": "Mô phỏng Quỹ này",
-          "inception": "Ngày thành lập",
-          "expense": "Phí quản lý",
-          "volatility": "Biến động (Năm)",
-          "benchmark": "Tham chiếu",
-          "navHistory": "Lịch sử NAV (5 Năm)",
-          "metrics": "Chỉ số Hiệu suất",
-          "maxDrawdown": "Sụt giảm tối đa",
-          "drawdownDesc": "Mức giảm lớn nhất từ đỉnh xuống đáy của quỹ trong quá khứ."
+            "back": "Quay lại danh sách",
+            "simulate": "Mô phỏng đầu tư quỹ này",
+            "inception": "Ngày thành lập",
+            "expense": "Phí quản lý",
+            "volatility": "Độ biến động (1Y)",
+            "benchmark": "Tham chiếu",
+            "navHistory": "Lịch sử NAV",
+            "metrics": "Hiệu suất",
+            "maxDrawdown": "Max Drawdown",
+            "drawdownDesc": "Mức sụt giảm tối đa từ đỉnh xuống đáy trong quá khứ."
         },
         "simulator": {
-          "title": "Mô phỏng Đầu tư (Backtest)",
-          "subtitle": "Kiểm thử chiến lược đầu tư dựa trên dữ liệu lịch sử.",
-          "params": "Thiết lập đầu tư",
-          "selectFund": "Chọn Quỹ so sánh",
-          "initialInv": "Vốn đầu tư ban đầu (VND)",
-          "monthlyCont": "Đầu tư hàng tháng (VND)",
-          "totalInv": "Tổng vốn gốc",
-          "totalProfit": "Tổng lãi/lỗ",
-          "chartTitle": "Tăng trưởng tài sản theo thời gian",
-          "breakdown": "Chi tiết",
-          "table": {
-            "value": "Giá trị"
-          }
+            "title": "Giả lập Đầu tư",
+            "subtitle": "Kiểm tra hiệu quả đầu tư định kỳ (DCA) hoặc một lần (Lump-sum) với dữ liệu quá khứ.",
+            "params": "Thông tin tính toán",
+            "initialInv": "Vốn đầu tư ban đầu",
+            "monthlyCont": "Đầu tư hàng tháng",
+            "selectFund": "Chọn quỹ để giả lập",
+            "chartTitle": "Giá trị tài sản theo thời gian",
+            "totalInv": "Tổng vốn đầu tư",
+            "totalProfit": "Tổng lợi nhuận",
+            "table": {
+                "invested": "Vốn đã nộp",
+                "value": "Giá trị cuối kỳ"
+            },
+            "breakdown": "Bảng chi tiết hàng năm"
         },
         "portfolio": {
-          "title": "Xây dựng Danh mục Đầu tư",
-          "subtitle": "Phối hợp các quỹ để tối ưu hóa lợi nhuận và giảm thiểu rủi ro.",
-          "assets": "Tài sản & Tỷ trọng",
-          "add": "Thêm quỹ",
-          "allocation": "Phân bổ tài sản",
-          "warningWeight": "Tổng tỷ trọng phải bằng 100% để phân tích.",
-          "metrics": {
-              "return": "Lợi nhuận TB (Năm)",
-              "risk": "Rủi ro (Độ lệch chuẩn)",
-              "ratio": "Tỷ suất Sinh lời / Rủi ro"
-          },
-          "growthChart": "Tăng trưởng giả định (100tr ban đầu)",
-          "rebalance": "Giả định tái cân bằng (Rebalance) hàng ngày.",
-          "riskReduction": "Giảm thiểu rủi ro nhờ đa dạng hóa"
+            "title": "Xây dựng Danh mục",
+            "subtitle": "Tối ưu hóa phân bổ tài sản giữa Cổ phiếu và Trái phiếu.",
+            "assets": "Tài sản & Tỷ trọng",
+            "add": "Thêm quỹ",
+            "allocation": "Phân bổ",
+            "warningWeight": "Tổng tỷ trọng phải bằng 100%",
+            "metrics": {
+                "return": "Lợi nhuận kỳ vọng",
+                "risk": "Rủi ro dự kiến",
+                "ratio": "Hiệu quả"
+            },
+            "growthChart": "Tăng trưởng giả định",
+            "rebalance": "Tái cân bằng hàng năm",
+            "riskReduction": "Đa dạng hóa giảm rủi ro"
         },
         "tools": {
-          "title": "Công cụ Tài chính",
-          "subtitle": "Các công cụ tính toán đơn giản giúp bạn lập kế hoạch tài chính.",
-          "compound": {
-            "name": "Tính lãi kép",
-            "desc": "Hình dung sức mạnh của lãi kép theo thời gian.",
-            "params": "Tham số đầu vào",
-            "initial": "Vốn gốc (VND)",
-            "cont": "Đóng góp định kỳ (VND)",
-            "freq": "Tần suất",
-            "rate": "Lãi suất kỳ vọng (%/Năm)",
-            "period": "Thời gian (Năm)",
-            "reset": "Đặt lại mặc định",
-            "summary": "Tổng kết sau {{years}} năm",
-            "earned": "Tiền lãi",
-            "chart": "Biểu đồ tăng trưởng",
-            "saveGraph": "Lưu ảnh",
-            "exportExcel": "Xuất Excel",
-            "explanationTitle": "Lãi suất kép là gì?",
-            "explanationDesc": "Hiểu đơn giản: Tiền lãi sinh ra tiền lãi. Khi bạn tái đầu tư khoản lời kiếm được, số tiền đó sẽ tiếp tục sinh lời trong kỳ tiếp theo, tạo ra hiệu ứng 'hòn tuyết lăn' tăng trưởng theo cấp số nhân.",
-            "disclaimer": "Lưu ý: Các con số dưới đây chỉ mang tính chất tham khảo dựa trên giả định lãi suất không đổi. Thị trường thực tế sẽ luôn biến động.",
-            "learnMore": "Đọc thêm về DCA & Lãi kép"
-          },
-          "inflation": {
-              "name": "Tính lạm phát",
-              "desc": "Xem sức mua của tiền bị bào mòn như thế nào theo thời gian.",
-              "current": "Số tiền hiện tại (VND)",
-              "rate": "Tỷ lệ lạm phát (%/Năm)",
-              "purchasingPower": "Sức mua tương đương",
-              "futureCost": "Cần có trong tương lai",
-              "chartPower": "Sức mua giảm dần",
-              "chartCost": "Giá cả tăng lên",
-              "exampleTitle": "Ví dụ thực tế: Bát phở",
-              "exampleDesc": "Nếu hôm nay một bát phở giá 50,000đ, sau {{years}} năm sẽ có giá:",
-              "resultDesc": "Để mua được cùng lượng hàng hóa trị giá {{amount}} hôm nay, bạn sẽ cần {{future}} vào năm {{year}}."
-          },
-          "fire": {
-            "name": "Tính toán FIRE",
-            "desc": "Khi nào bạn có thể nghỉ hưu sớm và tự do tài chính?",
-            "currentAge": "Tuổi hiện tại",
-            "netWorth": "Tài sản ròng hiện tại (VND)",
-            "income": "Thu nhập (VND)",
-            "expense": "Chi tiêu (VND)",
-            "swr": "Quy tắc rút tiền an toàn (%)",
-            "swrDesc": "Mặc định 4% (Quy tắc 25 lần).",
-            "returns": "Lợi nhuận đầu tư dự kiến (%)",
-            "inflation": "Lạm phát dự kiến (%)",
-            "savingsRate": "Tỷ lệ tiết kiệm",
-            "fireNumber": "Con số FIRE (Mục tiêu)",
-            "yearsToFire": "Số năm cần thiết",
-            "ageAtFire": "Tuổi nghỉ hưu",
-            "chartWorth": "Tài sản ròng",
-            "chartTarget": "Mục tiêu FIRE"
-          },
-          "goal": {
-            "name": "Lập kế hoạch mục tiêu",
-            "desc": "Bạn cần tiết kiệm bao nhiêu để đạt 10 tỷ?",
-            "target": "Mục tiêu tài chính (VND)",
-            "current": "Vốn hiện có",
-            "result": "Cần tiết kiệm {{freq}}",
-            "resultDesc": "để đạt {{amount}} trong {{years}} năm."
-          },
-          "loan": {
-            "name": "Tính lịch trả nợ",
-            "desc": "Tính toán khoản trả hàng tháng cho vay mua nhà/xe.",
-            "amount": "Số tiền vay (VND)",
-            "rate": "Lãi suất (%/Năm)",
-            "term": "Thời hạn (Năm)",
-            "start": "Ngày giải ngân",
-            "method": "Phương pháp tính",
-            "reducing": "Dư nợ giảm dần",
-            "flat": "Trên dư nợ gốc",
-            "totalPay": "Tổng phải trả",
-            "totalInt": "Tổng lãi phải trả",
-            "estMonthly": "Trả hàng tháng (Ước tính)",
-            "schedule": "Lịch trả nợ",
-            "colBalance": "Dư nợ",
-            "colPrincipal": "Gốc",
-            "colInterest": "Lãi",
-            "colTotal": "Tổng trả",
-            "chartRemaining": "Tiền gốc còn lại",
-            "chartTotalInterest": "Tổng lãi đã trả"
-          }
+            "title": "Công cụ Tài chính",
+            "subtitle": "Bộ công cụ giúp bạn tính toán lãi kép, lập kế hoạch hưu trí và vay mua nhà.",
+            "compound": {
+                "name": "Tính lãi kép",
+                "desc": "Xem sức mạnh của lãi suất kép theo thời gian.",
+                "explanationTitle": "Lãi suất kép là gì?",
+                "explanationDesc": "Lãi suất kép là khi tiền lãi bạn kiếm được tiếp tục sinh ra lãi mới. Theo thời gian, hiệu ứng này giúp tài sản tăng trưởng theo cấp số nhân.",
+                "learnMore": "Tìm hiểu thêm",
+                "disclaimer": "Kết quả chỉ mang tính tham khảo. Lãi suất thực tế có thể thay đổi tùy thuộc vào thị trường và sản phẩm tài chính.",
+                "params": "Thông tin tính toán",
+                "initial": "Số tiền ban đầu",
+                "cont": "Góp thêm định kỳ",
+                "rate": "Lãi suất / Lợi nhuận (%)",
+                "period": "Thời gian",
+                "freq": "Tần suất góp",
+                "reset": "Đặt lại",
+                "summary": "Sau {years} năm, bạn sẽ có",
+                "earned": "Tiền lãi",
+                "chart": "Biểu đồ tăng trưởng",
+                "saveGraph": "Lưu biểu đồ",
+                "exportExcel": "Xuất Excel"
+            },
+            "goal": {
+                "name": "Lập kế hoạch mục tiêu",
+                "desc": "Tính số tiền cần tiết kiệm để đạt mục tiêu tài chính.",
+                "target": "Mục tiêu (VND)",
+                "current": "Hiện có (VND)",
+                "result": "Cần tiết kiệm mỗi {freq}"
+            },
+            "fire": {
+                "name": "Tính toán FIRE",
+                "desc": "Khi nào bạn có thể nghỉ hưu sớm?",
+                "currentAge": "Tuổi hiện tại",
+                "netWorth": "Tài sản ròng hiện tại",
+                "income": "Thu nhập",
+                "expense": "Chi tiêu",
+                "returns": "Lợi nhuận đầu tư (%)",
+                "inflation": "Lạm phát (%)",
+                "swr": "Tỷ lệ rút tiền an toàn (%)",
+                "swrDesc": "Quy tắc 4% thường được sử dụng.",
+                "fireNumber": "Con số FIRE",
+                "yearsToFire": "Số năm còn lại",
+                "savingsRate": "Tỷ lệ tiết kiệm",
+                "chartWorth": "Tài sản",
+                "chartTarget": "Mục tiêu"
+            },
+            "inflation": {
+                "name": "Tính lạm phát",
+                "desc": "Giá trị đồng tiền trong tương lai.",
+                "current": "Số tiền hiện tại",
+                "rate": "Tỷ lệ lạm phát (%)",
+                "exampleTitle": "Chỉ số Phở",
+                "exampleDesc": "Giá một bát phở 50k sau {years} năm:",
+                "purchasingPower": "Sức mua tương đương",
+                "futureCost": "Chi phí tương lai",
+                "chartCost": "Chi phí hàng hóa",
+                "chartPower": "Sức mua còn lại"
+            },
+            "loan": {
+                "name": "Lịch trả nợ vay",
+                "desc": "Tính toán lịch trả nợ vay mua nhà, xe.",
+                "amount": "Số tiền vay",
+                "rate": "Lãi suất năm (%)",
+                "term": "Thời hạn vay",
+                "start": "Ngày giải ngân",
+                "method": "Phương pháp tính",
+                "reducing": "Dư nợ giảm dần",
+                "flat": "Dư nợ gốc",
+                "estMonthly": "Trả hàng tháng (ước tính)",
+                "totalInt": "Tổng lãi phải trả",
+                "totalPay": "Tổng gốc + lãi",
+                "schedule": "Lịch trả nợ",
+                "colBalance": "Dư nợ đầu kỳ",
+                "colPrincipal": "Gốc",
+                "colInterest": "Lãi",
+                "colTotal": "Tổng trả",
+                "chartRemaining": "Dư nợ còn lại",
+                "chartTotalInterest": "Lãi tích lũy"
+            }
         },
         "insights": {
-          "title": "Kiến thức & Phân tích",
-          "subtitle": "Phân tích dựa trên dữ liệu về đầu tư thụ động.",
-          "read": "Đọc bài viết"
+            "title": "Kiến thức & Phân tích",
+            "subtitle": "Bài viết chuyên sâu về đầu tư thụ động và tài chính cá nhân.",
+            "read": "Đọc tiếp"
         },
         "insightDetail": {
-          "back": "Quay lại danh sách",
-          "notFound": "Không tìm thấy bài viết",
-          "return": "Về trang kiến thức"
+            "notFound": "Không tìm thấy bài viết",
+            "return": "Quay lại danh sách",
+            "back": "Quay lại"
         }
       }
     }
@@ -258,10 +265,9 @@ i18n
   .use(initReactI18next)
   .init({
     resources,
-    lng: "vi",
-    fallbackLng: "vi",
+    lng: "vi", // default language
     interpolation: {
-      escapeValue: false 
+      escapeValue: false // react already safes from xss
     }
   });
 
