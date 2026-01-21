@@ -504,9 +504,11 @@ const Simulator: React.FC = () => {
                        type="text"
                        value={formatInputValue(initialInvestment)}
                        onChange={handleCurrencyChange(setInitialInvestment)}
-                       className="block w-full pl-4 pr-12 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-medium"
+                       className="block w-full pl-4 pr-16 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-sm transition-all"
                      />
-                     <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">₫</div>
+                     <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                        <span className="text-slate-500 dark:text-slate-400 font-bold text-sm">VND</span>
+                     </div>
                    </div>
                  </div>
 
@@ -518,9 +520,11 @@ const Simulator: React.FC = () => {
                        type="text"
                        value={formatInputValue(monthlyContribution)}
                        onChange={handleCurrencyChange(setMonthlyContribution)}
-                       className="block w-full pl-4 pr-12 py-2.5 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-medium"
+                       className="block w-full pl-4 pr-16 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-sm transition-all"
                      />
-                     <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400">₫</div>
+                     <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                        <span className="text-slate-500 dark:text-slate-400 font-bold text-sm">VND</span>
+                     </div>
                    </div>
                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                      Đầu tư vào ngày đầu tiên mỗi tháng.
@@ -868,9 +872,11 @@ const Simulator: React.FC = () => {
                         type="text" 
                         value={formatInputValue(newTxAmount)}
                         onChange={handleCurrencyChange(setNewTxAmount)}
-                        className="w-full text-lg font-bold p-3 pr-12 border border-slate-300 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500"
+                        className="w-full text-lg font-bold p-3 pr-16 border border-slate-300 dark:border-slate-600 rounded-xl bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:ring-emerald-500 focus:border-emerald-500"
                      />
-                     <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-slate-400 font-bold">₫</div>
+                     <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                        <span className="text-slate-500 dark:text-slate-400 font-bold text-sm">VND</span>
+                     </div>
                    </div>
                 </div>
              </div>

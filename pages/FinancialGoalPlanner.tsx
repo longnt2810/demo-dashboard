@@ -208,13 +208,16 @@ const FinancialGoalPlanner: React.FC = () => {
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 {t('pages.tools.goal.target')}
               </label>
-              <div className="relative rounded-md shadow-sm">
+              <div className="relative">
                  <input
                   type="text"
                   value={formatInputValue(targetAmount)}
                   onChange={handleCurrencyChange(setTargetAmount)}
-                  className="block w-full pl-3 pr-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                  className="block w-full pl-4 pr-16 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-sm transition-all"
                 />
+                <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                  <span className="text-slate-500 dark:text-slate-400 font-bold text-sm">VND</span>
+                </div>
               </div>
             </div>
 
@@ -223,13 +226,16 @@ const FinancialGoalPlanner: React.FC = () => {
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 {t('pages.tools.goal.current')}
               </label>
-              <div className="relative rounded-md shadow-sm">
+              <div className="relative">
                  <input
                   type="text"
                   value={formatInputValue(initialInvestment)}
                   onChange={handleCurrencyChange(setInitialInvestment)}
-                  className="block w-full pl-3 pr-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                  className="block w-full pl-4 pr-16 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-sm transition-all"
                 />
+                <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                  <span className="text-slate-500 dark:text-slate-400 font-bold text-sm">VND</span>
+                </div>
               </div>
             </div>
 
@@ -238,15 +244,20 @@ const FinancialGoalPlanner: React.FC = () => {
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 {t('pages.tools.compound.rate')}
               </label>
-              <input
-                type="number"
-                min="0"
-                max="100"
-                step="0.1"
-                value={interestRate}
-                onChange={(e) => setInterestRate(Number(e.target.value))}
-                className="block w-full pl-3 pr-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
-              />
+              <div className="relative">
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={interestRate}
+                  onChange={(e) => setInterestRate(Number(e.target.value))}
+                  className="block w-full pl-4 pr-12 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-sm transition-all"
+                />
+                <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                  <span className="text-slate-500 dark:text-slate-400 font-bold text-sm">%</span>
+                </div>
+              </div>
             </div>
 
             {/* Duration */}
@@ -276,7 +287,7 @@ const FinancialGoalPlanner: React.FC = () => {
               <select 
                 value={frequency}
                 onChange={(e) => setFrequency(e.target.value as Frequency)}
-                className="block w-full pl-3 pr-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                className="block w-full pl-3 pr-8 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-medium shadow-sm"
               >
                 <option value="Weekly">Weekly</option>
                 <option value="Monthly">Monthly</option>

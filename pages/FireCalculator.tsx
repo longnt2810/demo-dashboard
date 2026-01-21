@@ -162,7 +162,7 @@ const FireCalculator: React.FC = () => {
                 type="number"
                 value={currentAge}
                 onChange={(e) => setCurrentAge(Number(e.target.value))}
-                className="block w-full pl-3 pr-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                className="block w-full pl-4 pr-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-sm transition-all"
               />
             </div>
 
@@ -171,12 +171,17 @@ const FireCalculator: React.FC = () => {
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 {t('pages.tools.fire.netWorth')}
               </label>
-              <input
-                type="text"
-                value={formatInputValue(netWorth)}
-                onChange={handleCurrencyChange(setNetWorth)}
-                className="block w-full pl-3 pr-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  value={formatInputValue(netWorth)}
+                  onChange={handleCurrencyChange(setNetWorth)}
+                  className="block w-full pl-4 pr-16 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-sm transition-all"
+                />
+                <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                  <span className="text-slate-500 dark:text-slate-400 font-bold text-sm">VND</span>
+                </div>
+              </div>
             </div>
 
             {/* Income with Frequency */}
@@ -184,17 +189,22 @@ const FireCalculator: React.FC = () => {
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 {t('pages.tools.fire.income')}
               </label>
-              <div className="flex rounded-md shadow-sm">
-                <input
-                  type="text"
-                  value={formatInputValue(income)}
-                  onChange={handleCurrencyChange(setIncome)}
-                  className="block w-full pl-3 pr-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-l-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white flex-1"
-                />
+              <div className="flex gap-2">
+                <div className="relative flex-grow">
+                  <input
+                    type="text"
+                    value={formatInputValue(income)}
+                    onChange={handleCurrencyChange(setIncome)}
+                    className="block w-full pl-4 pr-16 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-sm transition-all"
+                  />
+                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                    <span className="text-slate-500 dark:text-slate-400 font-bold text-sm">VND</span>
+                  </div>
+                </div>
                 <select
                   value={incomeFreq}
                   onChange={(e) => setIncomeFreq(e.target.value as Frequency)}
-                  className="pl-2 pr-6 py-2.5 border-t border-b border-r border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-600 text-slate-600 dark:text-slate-200 text-sm rounded-r-lg focus:ring-emerald-500 focus:border-emerald-500 cursor-pointer min-w-[90px]"
+                  className="block w-32 pl-3 pr-8 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-medium shadow-sm"
                 >
                   <option value="Monthly">/ {t('common.month')}</option>
                   <option value="Yearly">/ {t('common.year')}</option>
@@ -207,17 +217,22 @@ const FireCalculator: React.FC = () => {
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 {t('pages.tools.fire.expense')}
               </label>
-              <div className="flex rounded-md shadow-sm">
-                <input
-                  type="text"
-                  value={formatInputValue(expense)}
-                  onChange={handleCurrencyChange(setExpense)}
-                  className="block w-full pl-3 pr-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-l-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white flex-1"
-                />
+              <div className="flex gap-2">
+                <div className="relative flex-grow">
+                  <input
+                    type="text"
+                    value={formatInputValue(expense)}
+                    onChange={handleCurrencyChange(setExpense)}
+                    className="block w-full pl-4 pr-16 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-sm transition-all"
+                  />
+                  <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                    <span className="text-slate-500 dark:text-slate-400 font-bold text-sm">VND</span>
+                  </div>
+                </div>
                  <select
                   value={expenseFreq}
                   onChange={(e) => setExpenseFreq(e.target.value as Frequency)}
-                  className="pl-2 pr-6 py-2.5 border-t border-b border-r border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-600 text-slate-600 dark:text-slate-200 text-sm rounded-r-lg focus:ring-emerald-500 focus:border-emerald-500 cursor-pointer min-w-[90px]"
+                  className="block w-32 pl-3 pr-8 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-sm bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-medium shadow-sm"
                 >
                   <option value="Monthly">/ {t('common.month')}</option>
                   <option value="Yearly">/ {t('common.year')}</option>
@@ -233,25 +248,35 @@ const FireCalculator: React.FC = () => {
                     <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
                       {t('pages.tools.fire.returns')}
                     </label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      value={returnRate}
-                      onChange={(e) => setReturnRate(Number(e.target.value))}
-                      className="block w-full px-2 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
-                    />
+                    <div className="relative">
+                      <input
+                        type="number"
+                        step="0.1"
+                        value={returnRate}
+                        onChange={(e) => setReturnRate(Number(e.target.value))}
+                        className="block w-full pl-3 pr-8 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                      />
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <span className="text-slate-500 dark:text-slate-400 text-xs">%</span>
+                      </div>
+                    </div>
                  </div>
                  <div>
                     <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
                       {t('pages.tools.fire.inflation')}
                     </label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      value={inflationRate}
-                      onChange={(e) => setInflationRate(Number(e.target.value))}
-                      className="block w-full px-2 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
-                    />
+                    <div className="relative">
+                      <input
+                        type="number"
+                        step="0.1"
+                        value={inflationRate}
+                        onChange={(e) => setInflationRate(Number(e.target.value))}
+                        className="block w-full pl-3 pr-8 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                      />
+                      <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <span className="text-slate-500 dark:text-slate-400 text-xs">%</span>
+                      </div>
+                    </div>
                  </div>
                </div>
                
@@ -259,13 +284,18 @@ const FireCalculator: React.FC = () => {
                   <label className="block text-xs font-medium text-slate-500 dark:text-slate-400 mb-1">
                     {t('pages.tools.fire.swr')}
                   </label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    value={withdrawalRate}
-                    onChange={(e) => setWithdrawalRate(Number(e.target.value))}
-                    className="block w-full px-2 py-1.5 text-sm border border-slate-300 dark:border-slate-600 rounded-md bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
-                  />
+                  <div className="relative">
+                    <input
+                      type="number"
+                      step="0.1"
+                      value={withdrawalRate}
+                      onChange={(e) => setWithdrawalRate(Number(e.target.value))}
+                      className="block w-full pl-3 pr-8 py-2 text-sm border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                    />
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                      <span className="text-slate-500 dark:text-slate-400 text-xs">%</span>
+                    </div>
+                  </div>
                   <p className="text-[10px] text-slate-400 mt-1">{t('pages.tools.fire.swrDesc')}</p>
                </div>
             </div>

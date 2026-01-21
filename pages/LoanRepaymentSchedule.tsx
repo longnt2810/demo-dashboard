@@ -268,13 +268,16 @@ const LoanRepaymentSchedule: React.FC = () => {
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 {t('pages.tools.loan.amount')}
               </label>
-              <div className="relative rounded-md shadow-sm">
+              <div className="relative">
                  <input
                   type="text"
                   value={formatInputValue(loanAmount)}
                   onChange={handleCurrencyChange(setLoanAmount)}
-                  className="block w-full pl-3 pr-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                  className="block w-full pl-4 pr-16 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-sm transition-all"
                 />
+                <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                  <span className="text-slate-500 dark:text-slate-400 font-bold text-sm">VND</span>
+                </div>
               </div>
             </div>
 
@@ -283,15 +286,20 @@ const LoanRepaymentSchedule: React.FC = () => {
               <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 {t('pages.tools.loan.rate')}
               </label>
-              <input
-                type="number"
-                min="0"
-                max="100"
-                step="0.1"
-                value={interestRate}
-                onChange={(e) => setInterestRate(Number(e.target.value))}
-                className="block w-full pl-3 pr-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
-              />
+              <div className="relative">
+                <input
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.1"
+                  value={interestRate}
+                  onChange={(e) => setInterestRate(Number(e.target.value))}
+                  className="block w-full pl-4 pr-12 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-semibold shadow-sm transition-all"
+                />
+                <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                  <span className="text-slate-500 dark:text-slate-400 font-bold text-sm">%</span>
+                </div>
+              </div>
             </div>
 
             {/* Duration */}
@@ -323,7 +331,7 @@ const LoanRepaymentSchedule: React.FC = () => {
                         type="date" 
                         value={startDate}
                         onChange={(e) => setStartDate(e.target.value)}
-                        className="block w-full pl-10 pr-4 py-2.5 border border-slate-300 dark:border-slate-600 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                        className="block w-full pl-10 pr-4 py-3 border border-slate-300 dark:border-slate-600 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white dark:bg-slate-700 text-slate-900 dark:text-white font-medium shadow-sm"
                     />
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <CalendarIcon className="h-5 w-5 text-slate-400" />
@@ -339,13 +347,13 @@ const LoanRepaymentSchedule: React.FC = () => {
                 <div className="grid grid-cols-2 gap-2">
                     <button 
                         onClick={() => setMethod('Reducing')}
-                        className={`py-2 px-3 text-sm rounded-lg border transition-all ${method === 'Reducing' ? 'bg-emerald-50 border-emerald-500 text-emerald-700 font-medium dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300'}`}
+                        className={`py-3 px-3 text-sm rounded-xl border transition-all ${method === 'Reducing' ? 'bg-emerald-50 border-emerald-500 text-emerald-700 font-bold dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300'}`}
                     >
                         {t('pages.tools.loan.reducing')}
                     </button>
                     <button 
                         onClick={() => setMethod('Flat')}
-                        className={`py-2 px-3 text-sm rounded-lg border transition-all ${method === 'Flat' ? 'bg-emerald-50 border-emerald-500 text-emerald-700 font-medium dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300'}`}
+                        className={`py-3 px-3 text-sm rounded-xl border transition-all ${method === 'Flat' ? 'bg-emerald-50 border-emerald-500 text-emerald-700 font-bold dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-50 dark:bg-slate-700 dark:border-slate-600 dark:text-slate-300'}`}
                     >
                         {t('pages.tools.loan.flat')}
                     </button>
