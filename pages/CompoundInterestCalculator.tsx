@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, RefreshCcw, ChevronLeft, ChevronRight, TrendingUp, Image as ImageIcon, FileSpreadsheet, Wallet, Sparkles, Calculator, Info, LineChart, Table as TableIcon, Layout, Download, Eye } from 'lucide-react';
+import { ArrowLeft, RefreshCcw, ChevronLeft, ChevronRight, TrendingUp, Image as ImageIcon, FileSpreadsheet, Wallet, Sparkles, Calculator, Info, LineChart, Table as TableIcon, Layout, Download, Eye, PieChart, PiggyBank, Coins } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import html2canvas from 'html2canvas';
 import * as XLSX from 'xlsx';
@@ -13,6 +13,7 @@ type ViewMode = 'Chart' | 'Table';
 
 interface CalculationRow {
   year: number;
+  yearLabel: string;
   totalPrincipal: number;
   totalInterest: number;
   totalBalance: number;
@@ -71,8 +72,15 @@ const CompoundInterestCalculator: React.FC = () => {
     let balance = initialPrincipal;
     let principal = initialPrincipal;
     
+    const currentYear = new Date().getFullYear();
     const rows: CalculationRow[] = [];
-    rows.push({ year: 0, totalPrincipal: Math.round(principal), totalInterest: 0, totalBalance: Math.round(balance) });
+    rows.push({ 
+        year: 0, 
+        yearLabel: currentYear.toString(),
+        totalPrincipal: Math.round(principal), 
+        totalInterest: 0, 
+        totalBalance: Math.round(balance) 
+    });
 
     for (let i = 1; i <= totalPeriods; i++) {
         // Add contribution at start of period (Annuity Due assumption commonly used for savings)
@@ -85,8 +93,10 @@ const CompoundInterestCalculator: React.FC = () => {
 
         // Record year-end data
         if (i % periodsPerYear === 0) {
+            const yearIndex = i / periodsPerYear;
             rows.push({
-                year: i / periodsPerYear,
+                year: yearIndex,
+                yearLabel: (currentYear + yearIndex).toString(),
                 totalPrincipal: Math.round(principal),
                 totalInterest: Math.round(balance - principal),
                 totalBalance: Math.round(balance)
@@ -191,7 +201,7 @@ const CompoundInterestCalculator: React.FC = () => {
     ];
 
     const tableData = data.map(row => [
-      row.year,
+      row.yearLabel,
       row.totalPrincipal,
       row.totalInterest,
       row.totalBalance
@@ -213,6 +223,63 @@ const CompoundInterestCalculator: React.FC = () => {
   const chartTextColor = isDark ? '#94a3b8' : '#94a3b8';
   const chartTooltipBg = isDark ? '#1e293b' : '#fff';
   const chartTooltipBorder = isDark ? '#334155' : '#e2e8f0';
+
+  // Calculate percentages for the summary
+  const principalPercent = summary.futureValue > 0 ? (summary.totalPrincipal / summary.futureValue) * 100 : 0;
+  const interestPercent = summary.futureValue > 0 ? (summary.totalInterest / summary.futureValue) * 100 : 0;
+  
+  // ROI Calculation (Return on Investment)
+  const roi = summary.totalPrincipal > 0 ? (summary.totalInterest / summary.totalPrincipal) * 100 : 0;
+
+  // --- Custom Tooltip Component ---
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      // Access the full data object for this point
+      const dataItem = payload[0].payload;
+      
+      const principal = dataItem.totalPrincipal;
+      const interest = dataItem.totalInterest;
+      const total = dataItem.totalBalance;
+
+      return (
+        <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm p-4 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 min-w-[220px]">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-3 pb-3 border-b border-slate-100 dark:border-slate-700">
+             <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+               {t('common.year')} {label}
+             </span>
+          </div>
+
+          {/* Total Balance Hero */}
+          <div className="mb-4">
+             <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-0.5 uppercase">Tổng tài sản</p>
+             <p className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+               {formatVND(total)}
+             </p>
+          </div>
+
+          {/* Breakdown */}
+          <div className="space-y-2.5">
+            <div className="flex justify-between items-center text-sm">
+               <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm"></div>
+                  <span className="text-slate-600 dark:text-slate-300 font-medium text-xs">{t('pages.simulator.table.invested')}</span>
+               </div>
+               <span className="font-bold text-slate-900 dark:text-white text-xs tabular-nums">{formatVND(principal)}</span>
+            </div>
+            <div className="flex justify-between items-center text-sm">
+               <div className="flex items-center gap-2">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm"></div>
+                  <span className="text-slate-600 dark:text-slate-300 font-medium text-xs">{t('pages.tools.compound.earned')}</span>
+               </div>
+               <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xs tabular-nums">+{formatVND(interest)}</span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -367,66 +434,90 @@ const CompoundInterestCalculator: React.FC = () => {
           
           {hasData ? (
             <>
-              {/* Metric Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
-                 {/* Card 1: Future Value */}
-                 <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 p-6 text-white shadow-lg md:col-span-1 lg:col-span-1 xl:col-span-1">
-                    {/* Decorative Circles */}
-                    <div className="absolute -right-4 -top-4 h-32 w-32 rounded-full border-[16px] border-white/10"></div>
-                    <div className="absolute -right-8 -top-8 h-48 w-48 rounded-full border-[16px] border-white/5"></div>
-                    
-                    <div className="relative z-10 flex flex-col h-full justify-between">
-                       <div>
-                          <p className="text-emerald-100 text-sm font-medium mb-1">
-                            {t('pages.tools.compound.summary', {years})}
-                          </p>
-                          <h3 className="text-2xl lg:text-3xl font-extrabold tracking-tight truncate" title={formatVND(summary.futureValue)}>
-                            {formatShortVND(summary.futureValue)}
-                          </h3>
-                       </div>
-                       <div className="mt-4 flex items-center gap-2 text-emerald-50 text-xs">
-                          <Sparkles className="h-4 w-4 text-yellow-300 fill-yellow-300" />
-                          <span>Tổng tài sản tích lũy</span>
-                       </div>
-                    </div>
-                 </div>
+              {/* NEW SUMMARY CARD STYLE - Clean Breakdown */}
+              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-6">
+                  
+                  {/* Hero Section: Future Value */}
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 border-b border-slate-100 dark:border-slate-700 pb-6">
+                      <div>
+                          <div className="flex items-center gap-2 mb-2">
+                              <div className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600">
+                                  <Sparkles className="h-5 w-5" />
+                              </div>
+                              <span className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                                  Tổng tài sản sau {years} năm
+                              </span>
+                          </div>
+                          <div className="text-4xl sm:text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                              {formatVND(summary.futureValue)}
+                          </div>
+                      </div>
+                  </div>
 
-                 {/* Card 2: Principal */}
-                 <div className="rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
-                   <div className="flex justify-between items-start mb-4">
-                       <div className="bg-blue-50 dark:bg-blue-900/30 p-2.5 rounded-xl">
-                          <Wallet className="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                       </div>
-                   </div>
-                   <div>
-                       <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">{t('pages.simulator.totalInv')}</p>
-                       <h3 className="text-2xl font-bold text-slate-900 dark:text-white truncate" title={formatVND(summary.totalPrincipal)}>
-                           {formatShortVND(summary.totalPrincipal)}
-                       </h3>
-                   </div>
-                 </div>
+                  {/* Detailed Grid Breakdown */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+                      
+                      {/* 1. Total Principal */}
+                      <div className="relative group">
+                          <div className="flex items-center gap-2 mb-1">
+                              <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Tiền gốc</p>
+                          </div>
+                          <div className="text-xl font-bold text-slate-900 dark:text-white">
+                              {formatShortVND(summary.totalPrincipal)}
+                          </div>
+                          <div className="text-xs font-medium text-slate-400 mt-1">
+                              Chiếm <span className="text-slate-600 dark:text-slate-300">{principalPercent.toFixed(1)}%</span> tổng TS
+                          </div>
+                      </div>
 
-                 {/* Card 3: Interest */}
-                 <div className="rounded-2xl bg-white dark:bg-slate-800 p-6 shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col justify-between">
-                   <div className="flex justify-between items-start mb-4">
-                       <div className="bg-indigo-50 dark:bg-indigo-900/30 p-2.5 rounded-xl">
-                          <TrendingUp className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
-                       </div>
-                       <span className="text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 px-2 py-1 rounded-md">
-                          +{summary.totalPrincipal > 0 ? ((summary.totalInterest / summary.totalPrincipal) * 100).toFixed(0) : 0}%
-                       </span>
-                   </div>
-                   <div>
-                       <p className="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider mb-1">{t('pages.tools.compound.earned')}</p>
-                       <h3 className="text-2xl font-bold text-indigo-600 dark:text-indigo-400 truncate" title={formatVND(summary.totalInterest)}>
-                           {formatShortVND(summary.totalInterest)}
-                       </h3>
-                   </div>
-                 </div>
+                      {/* 2. Total Interest */}
+                      <div className="relative group">
+                          <div className="flex items-center gap-2 mb-1">
+                              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Tiền lãi</p>
+                          </div>
+                          <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400">
+                              {formatShortVND(summary.totalInterest)}
+                          </div>
+                          <div className="text-xs font-medium text-slate-400 mt-1">
+                              Chiếm <span className="text-emerald-600 dark:text-emerald-400">{interestPercent.toFixed(1)}%</span> tổng TS
+                          </div>
+                      </div>
+
+                      {/* 3. ROI */}
+                      <div className="relative group pl-0 sm:pl-6 lg:pl-0 border-l-0 sm:border-l border-slate-100 dark:border-slate-700 lg:border-l-0">
+                          <div className="flex items-center gap-2 mb-1">
+                              <TrendingUp className="h-3.5 w-3.5 text-blue-500" />
+                              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Tỷ suất LN (ROI)</p>
+                          </div>
+                          <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
+                              {roi.toFixed(1)}%
+                          </div>
+                          <div className="text-xs text-slate-400 mt-1">
+                              Lợi nhuận / Vốn gốc
+                          </div>
+                      </div>
+
+                      {/* 4. IRR / Rate */}
+                      <div className="relative group pl-0 lg:pl-6 border-l-0 lg:border-l border-slate-100 dark:border-slate-700">
+                          <div className="flex items-center gap-2 mb-1">
+                              <Coins className="h-3.5 w-3.5 text-purple-500" />
+                              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">TB Năm (IRR)</p>
+                          </div>
+                          <div className="text-xl font-bold text-purple-600 dark:text-purple-400">
+                              {interestRate}%
+                          </div>
+                          <div className="text-xs text-slate-400 mt-1">
+                              Lãi suất giả định
+                          </div>
+                      </div>
+
+                  </div>
               </div>
 
-              {/* UNIFIED MAIN CARD (Header + Content) */}
-              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden animate-fade-in-up mt-2">
+              {/* UNIFIED MAIN CARD (Chart & Table) */}
+              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden animate-fade-in-up mt-6">
                 
                 {/* Unified Header - Clear & Descriptive */}
                 <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -508,8 +599,8 @@ const CompoundInterestCalculator: React.FC = () => {
                                     <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                                     <defs>
                                         <linearGradient id="colorPrincipal" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#94a3b8" stopOpacity={0.8}/>
-                                        <stop offset="95%" stopColor="#94a3b8" stopOpacity={0.1}/>
+                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
                                         </linearGradient>
                                         <linearGradient id="colorInterest" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="#059669" stopOpacity={0.8}/>
@@ -517,16 +608,12 @@ const CompoundInterestCalculator: React.FC = () => {
                                         </linearGradient>
                                     </defs>
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartGridColor} />
-                                    <XAxis dataKey="year" stroke={chartTextColor} tick={{fontSize: 12}} tickLine={false} axisLine={false} />
+                                    <XAxis dataKey="yearLabel" stroke={chartTextColor} tick={{fontSize: 12}} tickLine={false} axisLine={false} minTickGap={30} padding={{ right: 20 }} />
                                     <YAxis stroke={chartTextColor} tick={{fontSize: 12}} tickLine={false} axisLine={false} tickFormatter={formatShortVND} />
-                                    <Tooltip 
-                                        formatter={(value: number) => formatVND(value)}
-                                        contentStyle={{ backgroundColor: chartTooltipBg, borderRadius: '8px', border: `1px solid ${chartTooltipBorder}`, color: chartTextColor }}
-                                        itemStyle={{ color: chartTextColor }}
-                                    />
+                                    <Tooltip content={<CustomTooltip />} />
                                     <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
-                                    <Area type="monotone" dataKey="totalPrincipal" name={t('pages.simulator.table.invested')} stackId="1" stroke="#64748b" fill="url(#colorPrincipal)" />
-                                    <Area type="monotone" dataKey="totalInterest" name={t('pages.tools.compound.earned')} stackId="1" stroke="#059669" fill="url(#colorInterest)" />
+                                    <Area type="linear" dataKey="totalPrincipal" name={t('pages.simulator.table.invested')} stackId="1" stroke="#3b82f6" fill="url(#colorPrincipal)" />
+                                    <Area type="linear" dataKey="totalInterest" name={t('pages.tools.compound.earned')} stackId="1" stroke="#059669" fill="url(#colorInterest)" />
                                     </AreaChart>
                                 </ResponsiveContainer>
                             </div>
@@ -546,7 +633,7 @@ const CompoundInterestCalculator: React.FC = () => {
                                     <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
                                     {paginatedData.map((row) => (
                                         <tr key={row.year} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                                        <td className="px-6 py-3 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">{row.year}</td>
+                                        <td className="px-6 py-3 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">{row.yearLabel}</td>
                                         <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-slate-500 dark:text-slate-400">{formatVND(row.totalPrincipal)}</td>
                                         <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-indigo-600 dark:text-indigo-400 font-medium">+{formatVND(row.totalInterest)}</td>
                                         <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-emerald-600 dark:text-emerald-400 font-bold">{formatVND(row.totalBalance)}</td>
