@@ -281,6 +281,44 @@ const CompoundInterestCalculator: React.FC = () => {
     return null;
   };
 
+  // --- Render Chart Label ---
+  const renderChartLabel = (props: any) => {
+    const { x, y, index } = props;
+    
+    // Safety check
+    if (!data[index]) return null;
+    
+    const item = data[index];
+    const isLast = index === data.length - 1;
+    const isFirst = index === 0;
+    
+    // Determine step to prevent overcrowding
+    let step = 1;
+    if (data.length > 30) step = 5;
+    else if (data.length > 15) step = 3;
+    else if (data.length > 8) step = 2;
+
+    // Show label if it matches step or is the last point (and not conflicting with immediate previous if dense)
+    // Simple logic: index % step === 0 OR isLast
+    const isVisible = (index % step === 0) || isLast;
+
+    if (!isVisible) return null;
+
+    return (
+        <text 
+            x={x} 
+            y={y - 10} 
+            fill={isDark ? "#cbd5e1" : "#475569"} 
+            textAnchor="middle" 
+            dominantBaseline="auto"
+            fontSize={11}
+            fontWeight={600}
+        >
+            {formatShortVND(item.totalBalance)}
+        </text>
+    );
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <Link to="/tools" className="inline-flex items-center text-sm text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-200 mb-6 transition-colors">
@@ -596,7 +634,7 @@ const CompoundInterestCalculator: React.FC = () => {
                         <div className="p-6 h-[400px]">
                             <div className="h-full w-full" ref={chartRef}>
                                 <ResponsiveContainer width="100%" height="100%">
-                                    <AreaChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                                    <AreaChart data={data} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
                                     <defs>
                                         <linearGradient id="colorPrincipal" x1="0" y1="0" x2="0" y2="1">
                                         <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
@@ -613,7 +651,15 @@ const CompoundInterestCalculator: React.FC = () => {
                                     <Tooltip content={<CustomTooltip />} />
                                     <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
                                     <Area type="linear" dataKey="totalPrincipal" name={t('pages.simulator.table.invested')} stackId="1" stroke="#3b82f6" fill="url(#colorPrincipal)" />
-                                    <Area type="linear" dataKey="totalInterest" name={t('pages.tools.compound.earned')} stackId="1" stroke="#059669" fill="url(#colorInterest)" />
+                                    <Area 
+                                        type="linear" 
+                                        dataKey="totalInterest" 
+                                        name={t('pages.tools.compound.earned')} 
+                                        stackId="1" 
+                                        stroke="#059669" 
+                                        fill="url(#colorInterest)" 
+                                        label={renderChartLabel}
+                                    />
                                     </AreaChart>
                                 </ResponsiveContainer>
                             </div>
