@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useContext, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, RefreshCcw, ChevronLeft, ChevronRight, TrendingUp, Image as ImageIcon, FileSpreadsheet, Wallet, Sparkles, Calculator, Info, LineChart, Table as TableIcon, Layout, Download, Eye, PieChart, PiggyBank, Coins } from 'lucide-react';
+import { ArrowLeft, RefreshCcw, ChevronLeft, ChevronRight, TrendingUp, Image as ImageIcon, FileSpreadsheet, Wallet, Sparkles, Calculator, Info, LineChart, Table as TableIcon, Layout, Download, Eye, PieChart, PiggyBank, Coins, Calendar, CalendarClock, ChevronsLeft, ChevronsRight, ChevronDown } from 'lucide-react';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import html2canvas from 'html2canvas';
 import * as XLSX from 'xlsx';
@@ -9,11 +9,12 @@ import { ThemeContext } from '../App';
 import { ToggleGroup, ToggleGroupItem } from '../components/ui/toggle-group';
 
 type Frequency = 'Weekly' | 'Monthly' | 'Quarterly' | 'Yearly';
-type ViewMode = 'Chart' | 'Table';
+type TableView = 'Monthly' | 'Yearly';
 
 interface CalculationRow {
-  year: number;
-  yearLabel: string;
+  monthIndex: number;
+  yearIndex: number;
+  label: string;
   totalPrincipal: number;
   totalInterest: number;
   totalBalance: number;
@@ -34,10 +35,12 @@ const CompoundInterestCalculator: React.FC = () => {
   const [years, setYears] = useState<number>(10);
   const [frequency, setFrequency] = useState<Frequency>('Monthly');
   
-  const [viewMode, setViewMode] = useState<ViewMode>('Chart');
+  // --- View Control State ---
+  const [tableView, setTableView] = useState<TableView>('Yearly');
+  const [pageSizeMode, setPageSizeMode] = useState<'default' | 'all'>('default');
 
   // --- Results State ---
-  const [data, setData] = useState<CalculationRow[]>([]);
+  const [rawData, setRawData] = useState<CalculationRow[]>([]); // Stores all monthly points
   const [summary, setSummary] = useState({
     futureValue: 0,
     totalPrincipal: 0,
@@ -52,7 +55,12 @@ const CompoundInterestCalculator: React.FC = () => {
   // --- Pagination & Refs ---
   const chartRef = useRef<HTMLDivElement>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10;
+  
+  // Dynamic items per page based on view and selection
+  const itemsPerPage = useMemo(() => {
+      if (pageSizeMode === 'all') return 999999; // Effectively all
+      return tableView === 'Monthly' ? 12 : 10;
+  }, [pageSizeMode, tableView]);
 
   // --- Calculation Effect ---
   useEffect(() => {
@@ -60,57 +68,95 @@ const CompoundInterestCalculator: React.FC = () => {
     setCurrentPage(1);
   }, [initialPrincipal, contribution, interestRate, years, frequency]);
 
-  const calculate = () => {
-    let periodsPerYear = 12;
-    if (frequency === 'Weekly') periodsPerYear = 52;
-    if (frequency === 'Quarterly') periodsPerYear = 4;
-    if (frequency === 'Yearly') periodsPerYear = 1;
+  // Reset page when view settings change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [tableView, pageSizeMode]);
 
-    const ratePerPeriod = (interestRate / 100) / periodsPerYear;
-    const totalPeriods = years * periodsPerYear;
+  const calculate = () => {
+    // We simulate on a Monthly basis to support detailed views
+    const totalMonths = years * 12;
+    const ratePerMonth = (interestRate / 100) / 12;
 
     let balance = initialPrincipal;
     let principal = initialPrincipal;
     
-    const currentYear = new Date().getFullYear();
     const rows: CalculationRow[] = [];
+    
+    // Initial State (Month 0 / Year 0)
     rows.push({ 
-        year: 0, 
-        yearLabel: currentYear.toString(),
+        monthIndex: 0, 
+        yearIndex: 0,
+        label: '0',
         totalPrincipal: Math.round(principal), 
         totalInterest: 0, 
         totalBalance: Math.round(balance) 
     });
 
-    for (let i = 1; i <= totalPeriods; i++) {
-        // Add contribution at start of period (Annuity Due assumption commonly used for savings)
-        balance += contribution;
-        principal += contribution;
+    for (let m = 1; m <= totalMonths; m++) {
+        // Determine monthly contribution based on frequency
+        let added = 0;
+        if (frequency === 'Monthly') {
+            added = contribution;
+        } else if (frequency === 'Weekly') {
+            // Approx: 52 weeks / 12 months
+            added = contribution * (52 / 12);
+        } else if (frequency === 'Quarterly') {
+            if ((m - 1) % 3 === 0) added = contribution;
+        } else if (frequency === 'Yearly') {
+            if ((m - 1) % 12 === 0) added = contribution;
+        }
+
+        balance += added;
+        principal += added;
         
-        // Add interest at end of period
-        const interest = balance * ratePerPeriod;
+        // Add Interest (Compounded Monthly)
+        const interest = balance * ratePerMonth;
         balance += interest;
 
-        // Record year-end data
-        if (i % periodsPerYear === 0) {
-            const yearIndex = i / periodsPerYear;
-            rows.push({
-                year: yearIndex,
-                yearLabel: (currentYear + yearIndex).toString(),
-                totalPrincipal: Math.round(principal),
-                totalInterest: Math.round(balance - principal),
-                totalBalance: Math.round(balance)
-            });
-        }
+        rows.push({
+            monthIndex: m,
+            yearIndex: Math.floor(m / 12),
+            label: m.toString(),
+            totalPrincipal: Math.round(principal),
+            totalInterest: Math.round(balance - principal),
+            totalBalance: Math.round(balance)
+        });
     }
 
-    setData(rows);
+    setRawData(rows);
     setSummary({
         futureValue: balance,
         totalPrincipal: principal,
         totalInterest: balance - principal
     });
   };
+
+  // --- Derived Data: CHART (Always Yearly) ---
+  const chartData = useMemo(() => {
+      // Always filter for Year 0, 1, 2...
+      return rawData.filter(r => r.monthIndex % 12 === 0).map(r => ({
+          ...r,
+          label: (r.monthIndex / 12).toString() // Explicitly set label to Year Number
+      }));
+  }, [rawData]);
+
+  // --- Derived Data: TABLE (Depends on View) ---
+  const tableData = useMemo(() => {
+      if (tableView === 'Yearly') {
+          // Exclude Year 0 (monthIndex === 0)
+          return rawData.filter(r => r.monthIndex > 0 && r.monthIndex % 12 === 0).map(r => ({
+              ...r,
+              label: (r.monthIndex / 12).toString()
+          }));
+      } else {
+          // Exclude Month 0
+          return rawData.filter(r => r.monthIndex > 0).map(r => ({
+              ...r,
+              label: `T${r.monthIndex}`
+          }));
+      }
+  }, [rawData, tableView]);
 
   // --- Helpers ---
   const getFrequencyLabel = (freq: string) => {
@@ -196,40 +242,75 @@ const CompoundInterestCalculator: React.FC = () => {
       ["Total Principal Invested", summary.totalPrincipal],
       ["Total Interest Earned", summary.totalInterest],
       [],
-      ["--- Yearly Breakdown ---"],
-      ["Year", "Total Principal", "Total Interest", "Total Balance"]
+      ["--- Breakdown ---"],
+      [tableView === 'Yearly' ? "Year" : "Month", "Total Principal", "Total Interest", "Total Balance"]
     ];
 
-    const tableData = data.map(row => [
-      row.yearLabel,
+    const excelData = tableData.map(row => [
+      row.label,
       row.totalPrincipal,
       row.totalInterest,
       row.totalBalance
     ]);
 
-    const wsData = [...inputInfo, ...tableData];
+    const wsData = [...inputInfo, ...excelData];
     const ws = XLSX.utils.aoa_to_sheet(wsData);
     XLSX.utils.book_append_sheet(wb, ws, "Schedule");
     XLSX.writeFile(wb, "compound_interest_schedule.xlsx");
   };
 
-  const totalPages = Math.ceil((data.length - 1) / itemsPerPage);
-  const paginatedData = data.slice(
+  const totalPages = Math.ceil(tableData.length / itemsPerPage);
+  const paginatedData = tableData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
 
   const chartGridColor = isDark ? '#334155' : '#e2e8f0';
   const chartTextColor = isDark ? '#94a3b8' : '#94a3b8';
-  const chartTooltipBg = isDark ? '#1e293b' : '#fff';
-  const chartTooltipBorder = isDark ? '#334155' : '#e2e8f0';
-
+  
   // Calculate percentages for the summary
   const principalPercent = summary.futureValue > 0 ? (summary.totalPrincipal / summary.futureValue) * 100 : 0;
   const interestPercent = summary.futureValue > 0 ? (summary.totalInterest / summary.futureValue) * 100 : 0;
   
   // ROI Calculation (Return on Investment)
   const roi = summary.totalPrincipal > 0 ? (summary.totalInterest / summary.totalPrincipal) * 100 : 0;
+
+  // --- Logic for Pagination Page Numbers ---
+  const getPageNumbers = () => {
+    const pages = [];
+    const maxButtons = 7;
+    
+    if (totalPages <= maxButtons) {
+        for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+        // Always show 1
+        pages.push(1);
+        
+        let startPage = Math.max(2, currentPage - 1);
+        let endPage = Math.min(totalPages - 1, currentPage + 1);
+        
+        // Adjust if close to beginning
+        if (currentPage <= 3) {
+            endPage = Math.min(totalPages - 1, 4); // 1, 2, 3, 4 ...
+        }
+        // Adjust if close to end
+        if (currentPage >= totalPages - 2) {
+            startPage = Math.max(2, totalPages - 3); // ... N-3, N-2, N-1, N
+        }
+
+        if (startPage > 2) pages.push('...');
+        
+        for (let i = startPage; i <= endPage; i++) {
+            pages.push(i);
+        }
+        
+        if (endPage < totalPages - 1) pages.push('...');
+        
+        // Always show last
+        pages.push(totalPages);
+    }
+    return pages;
+  };
 
   // --- Custom Tooltip Component ---
   const CustomTooltip = ({ active, payload, label }: any) => {
@@ -240,39 +321,56 @@ const CompoundInterestCalculator: React.FC = () => {
       const principal = dataItem.totalPrincipal;
       const interest = dataItem.totalInterest;
       const total = dataItem.totalBalance;
-
+      
+      // Calculate growth relative to principal at this point
+      const pointGrowth = principal > 0 ? ((total - principal) / principal) * 100 : 0;
+      
       return (
-        <div className="bg-white/95 dark:bg-slate-800/95 backdrop-blur-sm p-4 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 min-w-[220px]">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-3 pb-3 border-b border-slate-100 dark:border-slate-700">
-             <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-               {t('common.year')} {label}
+        <div className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-2xl border border-slate-100 dark:border-slate-700 min-w-[240px]">
+          {/* Header: NĂM X */}
+          <div className="mb-3 pb-2 border-b border-slate-100 dark:border-slate-700">
+             <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+               NĂM {label}
              </span>
           </div>
 
-          {/* Total Balance Hero */}
-          <div className="mb-4">
-             <p className="text-[10px] font-semibold text-slate-400 dark:text-slate-500 mb-0.5 uppercase">Tổng tài sản</p>
-             <p className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          {/* Total Balance */}
+          <div className="mb-5">
+             <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-1">TỔNG TÀI SẢN</p>
+             <p className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">
                {formatVND(total)}
              </p>
           </div>
 
-          {/* Breakdown */}
-          <div className="space-y-2.5">
+          {/* Breakdown List */}
+          <div className="space-y-3">
+            {/* Principal */}
             <div className="flex justify-between items-center text-sm">
-               <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-blue-500 shadow-sm"></div>
-                  <span className="text-slate-600 dark:text-slate-300 font-medium text-xs">{t('pages.simulator.table.invested')}</span>
+               <div className="flex items-center gap-2.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
+                  <span className="text-slate-600 dark:text-slate-300 font-medium text-xs">Vốn đã nộp</span>
                </div>
                <span className="font-bold text-slate-900 dark:text-white text-xs tabular-nums">{formatVND(principal)}</span>
             </div>
+
+            {/* Interest */}
             <div className="flex justify-between items-center text-sm">
-               <div className="flex items-center gap-2">
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm"></div>
-                  <span className="text-slate-600 dark:text-slate-300 font-medium text-xs">{t('pages.tools.compound.earned')}</span>
+               <div className="flex items-center gap-2.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
+                  <span className="text-slate-600 dark:text-slate-300 font-medium text-xs">Tiền lãi</span>
                </div>
                <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xs tabular-nums">+{formatVND(interest)}</span>
+            </div>
+            
+            {/* Growth */}
+            <div className="flex justify-between items-center text-sm pt-2 mt-2 border-t border-slate-50 dark:border-slate-700/50">
+               <div className="flex items-center gap-2">
+                  <TrendingUp className="h-3.5 w-3.5 text-purple-500" />
+                  <span className="text-slate-600 dark:text-slate-300 font-medium text-xs">Tăng trưởng</span>
+               </div>
+               <span className="font-bold text-purple-600 dark:text-purple-400 text-xs tabular-nums">
+                 {pointGrowth > 0 ? '+' : ''}{pointGrowth.toFixed(1)}%
+               </span>
             </div>
           </div>
         </div>
@@ -285,21 +383,20 @@ const CompoundInterestCalculator: React.FC = () => {
   const renderChartLabel = (props: any) => {
     const { x, y, index } = props;
     
-    // Safety check
-    if (!data[index]) return null;
+    // Safety check - use chartData
+    if (!chartData[index]) return null;
     
-    const item = data[index];
-    const isLast = index === data.length - 1;
-    const isFirst = index === 0;
+    const item = chartData[index];
+    const isLast = index === chartData.length - 1;
     
     // Determine step to prevent overcrowding
     let step = 1;
-    if (data.length > 30) step = 5;
-    else if (data.length > 15) step = 3;
-    else if (data.length > 8) step = 2;
+    const len = chartData.length;
+    if (len > 30) step = Math.ceil(len / 6);
+    else if (len > 15) step = 3;
+    else if (len > 8) step = 2;
 
-    // Show label if it matches step or is the last point (and not conflicting with immediate previous if dense)
-    // Simple logic: index % step === 0 OR isLast
+    // Show label if it matches step or is the last point
     const isVisible = (index % step === 0) || isLast;
 
     if (!isVisible) return null;
@@ -458,7 +555,7 @@ const CompoundInterestCalculator: React.FC = () => {
                 setInterestRateInput("10");
                 setYears(10);
                 setFrequency('Monthly');
-                setViewMode('Chart');
+                setTableView('Yearly');
               }}
               className="w-full flex items-center justify-center py-3 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 bg-slate-100 hover:bg-rose-50 dark:bg-slate-800 dark:hover:bg-rose-900/20 rounded-full transition-all"
             >
@@ -467,16 +564,18 @@ const CompoundInterestCalculator: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Column: Summary & Chart OR Empty State */}
+        {/* Right Column: Summary & Chart & Table */}
         <div className="lg:col-span-8 space-y-6">
           
           {hasData ? (
             <>
-              {/* NEW SUMMARY CARD STYLE - Clean Breakdown */}
+              {/* NEW SUMMARY CARD STYLE - Side-by-Side Layout */}
               <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 mb-6">
                   
-                  {/* Hero Section: Future Value */}
-                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8 border-b border-slate-100 dark:border-slate-700 pb-6">
+                  {/* Hero Section: Future Value & Growth split */}
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 mb-8 border-b border-slate-100 dark:border-slate-700 pb-6">
+                      
+                      {/* Col 1: Total Assets */}
                       <div>
                           <div className="flex items-center gap-2 mb-2">
                               <div className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600">
@@ -490,10 +589,26 @@ const CompoundInterestCalculator: React.FC = () => {
                               {formatVND(summary.futureValue)}
                           </div>
                       </div>
+
+                      {/* Vertical Divider (Hidden on mobile) */}
+                      <div className="hidden sm:block h-12 w-px bg-slate-200 dark:bg-slate-700 mx-4"></div>
+
+                      {/* Col 2: Growth % */}
+                      <div className="sm:text-right">
+                           <div className="flex items-center sm:justify-end gap-2 mb-2">
+                              <span className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide">
+                                  Tăng trưởng
+                              </span>
+                              <TrendingUp className="h-5 w-5 text-purple-600" />
+                          </div>
+                          <div className="text-4xl sm:text-5xl font-extrabold text-purple-600 dark:text-purple-400 tracking-tight">
+                              +{roi.toFixed(1)}%
+                          </div>
+                      </div>
                   </div>
 
-                  {/* Detailed Grid Breakdown */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+                  {/* Detailed Grid Breakdown - Reorganized to 3 cols */}
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
                       
                       {/* 1. Total Principal */}
                       <div className="relative group">
@@ -510,7 +625,7 @@ const CompoundInterestCalculator: React.FC = () => {
                       </div>
 
                       {/* 2. Total Interest */}
-                      <div className="relative group">
+                      <div className="relative group pl-0 sm:pl-6 border-l-0 sm:border-l border-slate-100 dark:border-slate-700">
                           <div className="flex items-center gap-2 mb-1">
                               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
                               <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Tiền lãi</p>
@@ -523,27 +638,13 @@ const CompoundInterestCalculator: React.FC = () => {
                           </div>
                       </div>
 
-                      {/* 3. ROI */}
-                      <div className="relative group pl-0 sm:pl-6 lg:pl-0 border-l-0 sm:border-l border-slate-100 dark:border-slate-700 lg:border-l-0">
+                      {/* 3. IRR / Rate */}
+                      <div className="relative group pl-0 sm:pl-6 border-l-0 sm:border-l border-slate-100 dark:border-slate-700">
                           <div className="flex items-center gap-2 mb-1">
-                              <TrendingUp className="h-3.5 w-3.5 text-blue-500" />
-                              <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">Tỷ suất LN (ROI)</p>
-                          </div>
-                          <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                              {roi.toFixed(1)}%
-                          </div>
-                          <div className="text-xs text-slate-400 mt-1">
-                              Lợi nhuận / Vốn gốc
-                          </div>
-                      </div>
-
-                      {/* 4. IRR / Rate */}
-                      <div className="relative group pl-0 lg:pl-6 border-l-0 lg:border-l border-slate-100 dark:border-slate-700">
-                          <div className="flex items-center gap-2 mb-1">
-                              <Coins className="h-3.5 w-3.5 text-purple-500" />
+                              <Coins className="h-3.5 w-3.5 text-slate-500" />
                               <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">TB Năm (IRR)</p>
                           </div>
-                          <div className="text-xl font-bold text-purple-600 dark:text-purple-400">
+                          <div className="text-xl font-bold text-slate-700 dark:text-slate-300">
                               {interestRate}%
                           </div>
                           <div className="text-xs text-slate-400 mt-1">
@@ -554,168 +655,188 @@ const CompoundInterestCalculator: React.FC = () => {
                   </div>
               </div>
 
-              {/* UNIFIED MAIN CARD (Chart & Table) */}
-              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden animate-fade-in-up mt-6">
-                
-                {/* Unified Header - Clear & Descriptive */}
-                <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    {/* Left: Dynamic Title & Context */}
-                    <div>
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                            {viewMode === 'Chart' ? <TrendingUp className="h-5 w-5 text-emerald-600" /> : <TableIcon className="h-5 w-5 text-emerald-600" />}
-                            {viewMode === 'Chart' ? 'Biểu đồ tăng trưởng' : 'Bảng số liệu chi tiết'}
-                        </h3>
-                        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                            {viewMode === 'Chart' 
-                                ? 'Trực quan hóa quá trình tích lũy tài sản qua các năm.' 
-                                : 'Theo dõi chính xác dòng tiền và lãi suất hàng năm.'}
-                        </p>
-                    </div>
+              {/* CARD 1: CHART */}
+              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-6 animate-fade-in-up">
+                  <div className="flex items-center justify-between mb-6">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                          <TrendingUp className="h-5 w-5 text-emerald-600" />
+                          Biểu đồ tăng trưởng
+                      </h3>
+                      <button 
+                          onClick={handleExportImage}
+                          className="group flex items-center justify-center w-9 h-9 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-slate-400 hover:text-emerald-600 transition-all shadow-sm"
+                          title={t('pages.tools.compound.saveGraph')}
+                      >
+                          <Download className="h-4 w-4" />
+                      </button>
+                  </div>
+                  
+                  <div className="h-[400px]">
+                      <div className="h-full w-full" ref={chartRef}>
+                          <ResponsiveContainer width="100%" height="100%">
+                              <AreaChart data={chartData} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
+                              <defs>
+                                  <linearGradient id="colorPrincipal" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
+                                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
+                                  </linearGradient>
+                                  <linearGradient id="colorInterest" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="5%" stopColor="#059669" stopOpacity={0.8}/>
+                                  <stop offset="95%" stopColor="#059669" stopOpacity={0.1}/>
+                                  </linearGradient>
+                              </defs>
+                              <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartGridColor} />
+                              <XAxis dataKey="label" stroke={chartTextColor} tick={{fontSize: 12}} tickLine={false} axisLine={false} minTickGap={30} padding={{ right: 20 }} tickFormatter={(val) => `Năm ${val}`} />
+                              <YAxis stroke={chartTextColor} tick={{fontSize: 12}} tickLine={false} axisLine={false} tickFormatter={formatShortVND} />
+                              <Tooltip content={<CustomTooltip />} />
+                              <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
+                              <Area type="linear" dataKey="totalPrincipal" name={t('pages.simulator.table.invested')} stackId="1" stroke="#3b82f6" fill="url(#colorPrincipal)" />
+                              <Area 
+                                  type="linear" 
+                                  dataKey="totalInterest" 
+                                  name={t('pages.tools.compound.earned')} 
+                                  stackId="1" 
+                                  stroke="#059669" 
+                                  fill="url(#colorInterest)" 
+                                  label={renderChartLabel}
+                              />
+                              </AreaChart>
+                          </ResponsiveContainer>
+                      </div>
+                  </div>
+              </div>
 
-                    {/* Right: Controls (Switcher + Action) */}
-                    <div className="flex items-center justify-between md:justify-end gap-3 w-full md:w-auto bg-slate-50 dark:bg-slate-900/30 p-2 md:p-0 rounded-lg md:bg-transparent">
-                        
-                        {/* Explicit Label & Switcher */}
-                        <div className="flex items-center gap-3">
-                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider hidden sm:inline-block">
-                                Chế độ xem:
-                            </span>
-                            
-                            <ToggleGroup 
-                                type="single" 
-                                value={viewMode} 
-                                onValueChange={(val) => val && setViewMode(val as ViewMode)}
-                                className="bg-slate-100 dark:bg-slate-900/50 p-1 rounded-lg border border-slate-200 dark:border-slate-700"
-                            >
-                                <ToggleGroupItem
-                                    value="Chart"
-                                    className="flex items-center gap-2 h-auto py-1.5 px-3 rounded-md text-xs font-bold text-slate-500 dark:text-slate-400 hover:bg-transparent hover:text-slate-700 dark:hover:text-slate-200 data-[state=on]:bg-white dark:data-[state=on]:bg-slate-700 data-[state=on]:text-emerald-600 dark:data-[state=on]:text-emerald-400 data-[state=on]:shadow-sm data-[state=on]:ring-1 data-[state=on]:ring-black/5 dark:data-[state=on]:ring-white/5"
+              {/* CARD 2: TABLE */}
+              <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden animate-fade-in-up">
+                  <div className="px-6 py-5 border-b border-slate-100 dark:border-slate-700 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                          <TableIcon className="h-5 w-5 text-emerald-600" />
+                          Bảng số liệu chi tiết
+                      </h3>
+                      
+                      <div className="flex items-center gap-3">
+                          {/* Toggle View Mode: Monthly vs Yearly */}
+                          <div className="bg-slate-100 dark:bg-slate-900/50 p-1 rounded-lg flex items-center">
+                              {(['Yearly', 'Monthly'] as const).map(mode => (
+                                <button
+                                    key={mode}
+                                    onClick={() => setTableView(mode)}
+                                    className={`px-3 py-1.5 text-xs font-bold rounded-md transition-all flex items-center gap-1.5 ${
+                                        tableView === mode 
+                                        ? 'bg-white dark:bg-slate-700 text-emerald-600 dark:text-emerald-400 shadow-sm' 
+                                        : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                                    }`}
                                 >
-                                    <LineChart className="h-3.5 w-3.5" />
-                                    Biểu đồ
-                                </ToggleGroupItem>
-                                <ToggleGroupItem
-                                    value="Table"
-                                    className="flex items-center gap-2 h-auto py-1.5 px-3 rounded-md text-xs font-bold text-slate-500 dark:text-slate-400 hover:bg-transparent hover:text-slate-700 dark:hover:text-slate-200 data-[state=on]:bg-white dark:data-[state=on]:bg-slate-700 data-[state=on]:text-emerald-600 dark:data-[state=on]:text-emerald-400 data-[state=on]:shadow-sm data-[state=on]:ring-1 data-[state=on]:ring-black/5 dark:data-[state=on]:ring-white/5"
+                                    {mode === 'Yearly' ? <Calendar className="h-3 w-3" /> : <CalendarClock className="h-3 w-3" />}
+                                    {mode === 'Yearly' ? 'Theo Năm' : 'Theo Tháng'}
+                                </button>
+                              ))}
+                          </div>
+
+                          <div className="h-6 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block"></div>
+
+                          <button 
+                              onClick={handleExportExcel}
+                              className="group flex items-center justify-center w-9 h-9 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-slate-400 hover:text-emerald-600 transition-all shadow-sm"
+                              title={t('pages.tools.compound.exportExcel')}
+                          >
+                              <FileSpreadsheet className="h-4 w-4" />
+                          </button>
+                      </div>
+                  </div>
+
+                  <div className="flex flex-col">
+                      {/* Pagination Controls Container - MOVED TO TOP to ensure visibility or bottom as well. Keeping at bottom. */}
+                      
+                      <div className="overflow-x-auto">
+                          <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+                              <thead className="bg-slate-50 dark:bg-slate-900/50">
+                              <tr>
+                                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">Thời gian</th>
+                                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.simulator.table.invested')}</th>
+                                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.tools.compound.earned')}</th>
+                                  <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.simulator.table.value')}</th>
+                              </tr>
+                              </thead>
+                              <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
+                              {paginatedData.map((row) => (
+                                  <tr key={`${row.yearIndex}-${row.monthIndex}`} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                                  <td className="px-6 py-3 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">
+                                      {tableView === 'Yearly' ? `Năm ${row.label}` : `Tháng ${row.label.replace('T','')}`}
+                                  </td>
+                                  <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-slate-500 dark:text-slate-400">{formatVND(row.totalPrincipal)}</td>
+                                  <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-indigo-600 dark:text-indigo-400 font-medium">+{formatVND(row.totalInterest)}</td>
+                                  <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-emerald-600 dark:text-emerald-400 font-bold">{formatVND(row.totalBalance)}</td>
+                                  </tr>
+                              ))}
+                              </tbody>
+                          </table>
+                      </div>
+                      
+                      {/* Pagination Controls */}
+                      <div className="px-6 py-4 flex flex-col sm:flex-row items-center justify-between border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 mt-auto gap-4">
+                          
+                          {/* Left: Items per page selector */}
+                          <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                              <span>Hiển thị:</span>
+                              <div className="relative">
+                                  <select 
+                                      value={pageSizeMode}
+                                      onChange={(e) => setPageSizeMode(e.target.value as 'default' | 'all')}
+                                      className="block w-full pl-3 pr-8 py-1.5 text-xs border border-slate-200 dark:border-slate-700 rounded-lg focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium shadow-sm appearance-none cursor-pointer hover:border-emerald-400 transition-colors"
+                                  >
+                                      <option value="default">{tableView === 'Monthly' ? '12' : '10'} dòng / trang</option>
+                                      <option value="all">Hiện tất cả</option>
+                                  </select>
+                                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-500">
+                                      <ChevronDown className="h-3 w-3" />
+                                  </div>
+                              </div>
+                          </div>
+
+                          {/* Right: Page Numbers - Hide if showing ALL or if there is only 1 page */}
+                          {totalPages > 1 && pageSizeMode !== 'all' && (
+                            <div className="flex items-center gap-1.5">
+                                <button
+                                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                    disabled={currentPage === 1}
+                                    className="p-1.5 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                                 >
-                                    <TableIcon className="h-3.5 w-3.5" />
-                                    Chi tiết
-                                </ToggleGroupItem>
-                            </ToggleGroup>
-                        </div>
-
-                        {/* Divider (Hidden on small screens) */}
-                        <div className="h-8 w-px bg-slate-200 dark:bg-slate-700 mx-1 hidden md:block"></div>
-
-                        {/* Action Button */}
-                        {viewMode === 'Chart' ? (
-                            <button 
-                                onClick={handleExportImage}
-                                className="group flex items-center justify-center w-9 h-9 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-slate-400 hover:text-emerald-600 transition-all shadow-sm"
-                                title={t('pages.tools.compound.saveGraph')}
-                            >
-                                <Download className="h-4 w-4" />
-                            </button>
-                        ) : (
-                            <button 
-                                onClick={handleExportExcel}
-                                className="group flex items-center justify-center w-9 h-9 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-emerald-500 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 text-slate-400 hover:text-emerald-600 transition-all shadow-sm"
-                                title={t('pages.tools.compound.exportExcel')}
-                            >
-                                <FileSpreadsheet className="h-4 w-4" />
-                            </button>
-                        )}
-                    </div>
-                </div>
-
-                {/* Content Body */}
-                <div>
-                    {viewMode === 'Chart' ? (
-                        <div className="p-6 h-[400px]">
-                            <div className="h-full w-full" ref={chartRef}>
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <AreaChart data={data} margin={{ top: 20, right: 20, left: 0, bottom: 0 }}>
-                                    <defs>
-                                        <linearGradient id="colorPrincipal" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.1}/>
-                                        </linearGradient>
-                                        <linearGradient id="colorInterest" x1="0" y1="0" x2="0" y2="1">
-                                        <stop offset="5%" stopColor="#059669" stopOpacity={0.8}/>
-                                        <stop offset="95%" stopColor="#059669" stopOpacity={0.1}/>
-                                        </linearGradient>
-                                    </defs>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartGridColor} />
-                                    <XAxis dataKey="yearLabel" stroke={chartTextColor} tick={{fontSize: 12}} tickLine={false} axisLine={false} minTickGap={30} padding={{ right: 20 }} />
-                                    <YAxis stroke={chartTextColor} tick={{fontSize: 12}} tickLine={false} axisLine={false} tickFormatter={formatShortVND} />
-                                    <Tooltip content={<CustomTooltip />} />
-                                    <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
-                                    <Area type="linear" dataKey="totalPrincipal" name={t('pages.simulator.table.invested')} stackId="1" stroke="#3b82f6" fill="url(#colorPrincipal)" />
-                                    <Area 
-                                        type="linear" 
-                                        dataKey="totalInterest" 
-                                        name={t('pages.tools.compound.earned')} 
-                                        stackId="1" 
-                                        stroke="#059669" 
-                                        fill="url(#colorInterest)" 
-                                        label={renderChartLabel}
-                                    />
-                                    </AreaChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="flex flex-col h-full">
-                            <div className="overflow-x-auto">
-                                <table className="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
-                                    <thead className="bg-slate-50 dark:bg-slate-900/50">
-                                    <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('common.year')}</th>
-                                        <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.simulator.table.invested')}</th>
-                                        <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.tools.compound.earned')}</th>
-                                        <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('pages.simulator.table.value')}</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody className="bg-white dark:bg-slate-800 divide-y divide-slate-200 dark:divide-slate-700">
-                                    {paginatedData.map((row) => (
-                                        <tr key={row.year} className="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
-                                        <td className="px-6 py-3 whitespace-nowrap text-sm font-medium text-slate-900 dark:text-white">{row.yearLabel}</td>
-                                        <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-slate-500 dark:text-slate-400">{formatVND(row.totalPrincipal)}</td>
-                                        <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-indigo-600 dark:text-indigo-400 font-medium">+{formatVND(row.totalInterest)}</td>
-                                        <td className="px-6 py-3 whitespace-nowrap text-sm text-right text-emerald-600 dark:text-emerald-400 font-bold">{formatVND(row.totalBalance)}</td>
-                                        </tr>
+                                    <ChevronLeft className="h-4 w-4" />
+                                </button>
+                                
+                                <div className="flex items-center gap-1">
+                                    {getPageNumbers().map((page, idx) => (
+                                        <React.Fragment key={idx}>
+                                            {page === '...' ? (
+                                                <span className="text-slate-400 dark:text-slate-600 px-1 text-xs select-none">...</span>
+                                            ) : (
+                                                <button
+                                                    onClick={() => setCurrentPage(page as number)}
+                                                    className={`min-w-[28px] h-7 px-1 text-xs font-medium rounded-md border transition-all ${
+                                                        currentPage === page 
+                                                        ? 'bg-emerald-600 border-emerald-600 text-white shadow-sm' 
+                                                        : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-emerald-300 hover:text-emerald-600 dark:hover:border-emerald-700'
+                                                    }`}
+                                                >
+                                                    {page}
+                                                </button>
+                                            )}
+                                        </React.Fragment>
                                     ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                            {/* Pagination Controls */}
-                            {totalPages > 1 && (
-                                <div className="px-6 py-4 flex items-center justify-between border-t border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50 mt-auto">
-                                    <div className="text-sm text-slate-500 dark:text-slate-400">
-                                    Page <span className="font-medium">{currentPage}</span> of <span className="font-medium">{totalPages}</span>
-                                    </div>
-                                    <div className="flex gap-2">
-                                    <button
-                                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                                        disabled={currentPage === 1}
-                                        className="p-2 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        <ChevronLeft className="h-4 w-4" />
-                                    </button>
-                                    <button
-                                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                                        disabled={currentPage === totalPages}
-                                        className="p-2 rounded-md border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        <ChevronRight className="h-4 w-4" />
-                                    </button>
-                                    </div>
                                 </div>
-                            )}
-                        </div>
-                    )}
-                </div>
+
+                                <button
+                                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                    disabled={currentPage === totalPages}
+                                    className="p-1.5 rounded-md border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <ChevronRight className="h-4 w-4" />
+                                </button>
+                            </div>
+                          )}
+                      </div>
+                  </div>
               </div>
             </>
           ) : (
