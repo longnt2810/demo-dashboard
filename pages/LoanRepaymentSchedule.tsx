@@ -239,8 +239,64 @@ const LoanRepaymentSchedule: React.FC = () => {
 
   const chartGridColor = isDark ? '#334155' : '#e2e8f0';
   const chartTextColor = isDark ? '#94a3b8' : '#94a3b8';
-  const chartTooltipBg = isDark ? '#1e293b' : '#fff';
-  const chartTooltipBorder = isDark ? '#334155' : '#e2e8f0';
+  
+  // --- Custom Tooltip Component ---
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      // Access the full data object for this point
+      const dataItem = payload[0].payload;
+      
+      const endingBalance = dataItem.endingBalance;
+      const accInterest = dataItem.accInterest;
+      const dateStr = dataItem.date;
+      
+      // Progress calculation (Reverse logic: lower balance is better)
+      const paidPercent = loanAmount > 0 ? ((loanAmount - endingBalance) / loanAmount) * 100 : 0;
+      
+      return (
+        <div className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-2xl border border-slate-100 dark:border-slate-700 min-w-[240px]">
+          {/* Header: THÁNG X */}
+          <div className="mb-3 pb-2 border-b border-slate-100 dark:border-slate-700">
+             <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+               {label} ({dateStr})
+             </span>
+          </div>
+
+          {/* Main Value: Remaining Balance */}
+          <div className="mb-5">
+             <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-1">{t('pages.tools.loan.chartRemaining')}</p>
+             <p className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">
+               {formatShortVND(endingBalance)}
+             </p>
+          </div>
+
+          {/* Breakdown List */}
+          <div className="space-y-3">
+            {/* Interest */}
+            <div className="flex justify-between items-center text-sm">
+               <div className="flex items-center gap-2.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-rose-500"></div>
+                  <span className="text-slate-600 dark:text-slate-300 font-medium text-xs">{t('pages.tools.loan.chartTotalInterest')}</span>
+               </div>
+               <span className="font-bold text-rose-600 dark:text-rose-400 text-xs tabular-nums">{formatShortVND(accInterest)}</span>
+            </div>
+            
+            {/* Progress */}
+            <div className="flex justify-between items-center text-sm pt-2 mt-2 border-t border-slate-50 dark:border-slate-700/50">
+               <div className="flex items-center gap-2">
+                  <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
+                  <span className="text-slate-600 dark:text-slate-300 font-medium text-xs">Đã trả gốc</span>
+               </div>
+               <span className="font-bold text-emerald-600 dark:text-emerald-400 text-xs tabular-nums">
+                 {paidPercent.toFixed(1)}%
+               </span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -460,11 +516,7 @@ const LoanRepaymentSchedule: React.FC = () => {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartGridColor} />
                   <XAxis dataKey="month" stroke={chartTextColor} tick={{fontSize: 12}} tickLine={false} axisLine={false} tickFormatter={(val) => `Tháng ${val}`} minTickGap={30} />
                   <YAxis stroke={chartTextColor} tick={{fontSize: 12}} tickLine={false} axisLine={false} tickFormatter={formatShortVND} />
-                  <Tooltip 
-                    formatter={(value: number) => formatVND(value)}
-                    contentStyle={{ backgroundColor: chartTooltipBg, borderRadius: '8px', border: `1px solid ${chartTooltipBorder}`, color: chartTextColor }}
-                    itemStyle={{ color: chartTextColor }}
-                  />
+                  <Tooltip content={<CustomTooltip />} />
                   <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
                   <Area type="monotone" dataKey="endingBalance" name={t('pages.tools.loan.chartRemaining')} stackId="1" stroke="#059669" fill="url(#colorBalance)" />
                   <Area type="monotone" dataKey="accInterest" name={t('pages.tools.loan.chartTotalInterest')} stackId="2" stroke="#e11d48" fill="url(#colorInterest)" />

@@ -128,8 +128,64 @@ const FireCalculator: React.FC = () => {
 
   const chartGridColor = isDark ? '#334155' : '#e2e8f0';
   const chartTextColor = isDark ? '#94a3b8' : '#64748b';
-  const chartTooltipBg = isDark ? '#1e293b' : '#fff';
-  const chartTooltipBorder = isDark ? '#334155' : '#e2e8f0';
+  
+  // --- Custom Tooltip Component ---
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      // Access the full data object for this point
+      const dataItem = payload[0].payload;
+      
+      const netWorthVal = dataItem.netWorth;
+      const targetVal = dataItem.fireTarget;
+      
+      // Calculate progress
+      const progress = targetVal > 0 ? (netWorthVal / targetVal) * 100 : 0;
+      const isReached = netWorthVal >= targetVal;
+      
+      return (
+        <div className="bg-white dark:bg-slate-800 p-4 rounded-xl shadow-2xl border border-slate-100 dark:border-slate-700 min-w-[240px]">
+          {/* Header: AGE (YEAR) */}
+          <div className="mb-3 pb-2 border-b border-slate-100 dark:border-slate-700">
+             <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest">
+               {label} TUỔI (NĂM {dataItem.year})
+             </span>
+          </div>
+
+          {/* Main Value: Net Worth */}
+          <div className="mb-5">
+             <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mb-1">{t('pages.tools.fire.chartWorth')}</p>
+             <p className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-none">
+               {formatShortVND(netWorthVal)}
+             </p>
+          </div>
+
+          {/* Breakdown List */}
+          <div className="space-y-3">
+            {/* Target */}
+            <div className="flex justify-between items-center text-sm">
+               <div className="flex items-center gap-2.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-orange-500"></div>
+                  <span className="text-slate-600 dark:text-slate-300 font-medium text-xs">{t('pages.tools.fire.chartTarget')}</span>
+               </div>
+               <span className="font-bold text-slate-900 dark:text-white text-xs tabular-nums">{formatShortVND(targetVal)}</span>
+            </div>
+            
+            {/* Progress */}
+            <div className="flex justify-between items-center text-sm pt-2 mt-2 border-t border-slate-50 dark:border-slate-700/50">
+               <div className="flex items-center gap-2">
+                  <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
+                  <span className="text-slate-600 dark:text-slate-300 font-medium text-xs">Tiến độ</span>
+               </div>
+               <span className={`font-bold text-xs tabular-nums ${isReached ? 'text-emerald-600 dark:text-emerald-400' : 'text-orange-600 dark:text-orange-400'}`}>
+                 {progress.toFixed(1)}%
+               </span>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -394,11 +450,7 @@ const FireCalculator: React.FC = () => {
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={chartGridColor} />
                   <XAxis dataKey="age" stroke={chartTextColor} tick={{fontSize: 12}} tickLine={false} axisLine={false} label={{ value: 'Tuổi', position: 'insideBottom', offset: -5, fill: chartTextColor, fontSize: 10 }} />
                   <YAxis stroke={chartTextColor} tick={{fontSize: 12}} tickLine={false} axisLine={false} tickFormatter={formatShortVND} />
-                  <Tooltip 
-                    formatter={(value: number) => formatShortVND(value)}
-                    contentStyle={{ backgroundColor: chartTooltipBg, borderRadius: '8px', border: `1px solid ${chartTooltipBorder}`, color: chartTextColor }}
-                    itemStyle={{ color: chartTextColor }}
-                  />
+                  <Tooltip content={<CustomTooltip />} />
                   <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
                   <ReferenceLine y={fireNumber} label="Mục tiêu FIRE" stroke="red" strokeDasharray="3 3" />
                   <Line type="monotone" dataKey="netWorth" name={t('pages.tools.fire.chartWorth')} stroke="#059669" strokeWidth={3} dot={false} />
